@@ -1,0 +1,10 @@
+name: raptor
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - raptor=3.0.1
+  - python
+  - pip
+  - pip:
+    - psrecord

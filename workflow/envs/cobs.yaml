@@ -1,0 +1,10 @@
+name: cobs
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - cobs
+  - python
+  - pip
+  - pip:
+    - psrecord

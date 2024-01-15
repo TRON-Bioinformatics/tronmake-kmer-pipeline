@@ -1,0 +1,7 @@
+.idea
+.snakemake
+query
+index
+**/__pycache__
+query*
+

@@ -1,0 +1,10 @@
+name: raptor
+channels:
+  - conda-forge
+  - bioconda
+  - tlemane
+dependencies:
+  - kmindex=0.5.2
+  - kmtricks
+  - python
+  - ntcard

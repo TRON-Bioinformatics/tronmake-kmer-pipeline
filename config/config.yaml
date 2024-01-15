@@ -1,0 +1,16 @@
+modus:
+  query: false
+  indexing: true
+
+indexing:
+  samples: examples/all_bin_paths.txt
+  kmer_size: 21
+  cutoff: 2
+  method: "raptor"
+  fpr: 0.05
+
+query:
+  index: examples/kmindex/G_21
+  query_fasta: examples/query.fasta
+  kmer_ratio: 0.7
+  method: "raptor"

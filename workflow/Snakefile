@@ -1,0 +1,25 @@
+import os
+import sys
+
+configfile: workflow.source_path("../config/config.yaml")
+include: "rules/common.smk"
+
+validate_config(config)
+
+if config['modus']['indexing']:
+    samples = read_sample_sheet(config['indexing']['samples'])
+else:
+    samples = pd.DataFrame(columns=['bin_id', 'fastq'])
+
+include: "rules/query.smk"
+include: "rules/kmindex.smk"
+include: "rules/raptor.smk"
+
+localrules:
+    convert_bin_to_fof,
+    convert_bin_to_raptor_fof
+
+rule all:
+    input:
+        get_final_output()
+
