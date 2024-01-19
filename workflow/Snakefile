@@ -6,6 +6,7 @@ include: "rules/common.smk"
 
 validate_config(config)
 
+# Read sample sheet
 if config['modus']['indexing']:
     samples = read_sample_sheet(config['indexing']['samples'])
 else:

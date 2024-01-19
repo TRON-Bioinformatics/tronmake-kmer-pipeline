@@ -72,9 +72,9 @@ def read_sample_sheet(file):
     file_content = []
     with open(file, "r") as file_handle:
         for line in file_handle:
-            elements = line.rstrip().split(':')
+            elements = line.rstrip().split('\t')
             bin_id = elements[0].rstrip()
-            fastq = elements[1]
+            fastq = elements[1].rstrip()
             file_content.append({'bin_id': bin_id, 'fastq': fastq})
     samples = pd.DataFrame(file_content)
     return samples
@@ -87,7 +87,7 @@ def get_ntcard_fastq(wildcards):
     except AttributeError as error:
         return ''
     # Our sample sheet format allows the following delimiters ";"
-    fastq = fastq.split(';')
+    fastq = fastq.split(',')
     return fastq
 
 def get_memory_raptor(wildcards, input):

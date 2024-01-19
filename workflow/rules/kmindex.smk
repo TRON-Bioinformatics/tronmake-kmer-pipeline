@@ -64,15 +64,24 @@ rule estimate_bf_size:
         echo -n "$bf_size" > {output.bloom_filter_size}
         '''
 
+rule write_kmtricks_fof:
+    output:
+        fof = 'index/kmindex/samples.txt'
+    run:
+        with open(output.fof, 'w') as file_handle:
+            for sample in samples.itertuples():
+                fastq = sample.fastq.replace(",", ";")
+                file_handle.write(f'{sample.bin_id}:{fastq}\n')
+
 rule kmtricks:
     input:
         bf_size = rules.estimate_bf_size.output.bloom_filter_size,
-        sample_sheet = config['indexing']['samples']
+        sample_sheet = rules.write_kmtricks_fof.output.fof
     output:
         kmtricks_index = directory('index/kmindex/kmtricks')
     threads: 16
     params:
-        kmer_size = config['indexing']['kmer_size'],
+        kmer_size = int(config['indexing']['kmer_size']),
     conda:
         '../envs/kmindex.yaml'
     shell:

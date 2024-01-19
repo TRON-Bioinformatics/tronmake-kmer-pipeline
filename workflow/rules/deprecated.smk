@@ -38,3 +38,30 @@ rule cobs_query:
         '--file {input.query_fasta} '
         '--threshold {params.theta} '
         '> {output.search_results} 2> {log}'
+
+rule convert_bin_to_raptor_fof:
+    """Parse sample sheet to FOF
+
+    k4neo supports the kmindex sheet format as input. However, Raptor uses
+    it's own file of files format. This rule converts the sample sheet for raptor
+
+    """
+    input:
+        sample_sheet = config['indexing']['samples']
+    output:
+        fof = "index/raptor/fof.txt",
+        index_mapping = "index/raptor/index_mapping.txt"
+    run:
+        with open(input.sample_sheet, 'r') as file_handle, open(output.fof, 'w') as write_handle, open(output.index_mapping, 'w') as mapping_handle :
+
+            mapping_handle.write("sample_name\tminimiser_id\n")
+            for line in file_handle:
+                elements = line.rstrip().split(' : ')
+                fastq = elements[1].replace(";", " ")
+                
+                # Write FOF
+                write_handle.write(fastq + "\n")
+                # Write index mapping: sample_name: minimider_id
+                # Raptor uses the basename of the first fastq file as bin identifier
+                minimiser_id = os.path.basename(fastq.split(" ")[0]).rstrip(".minimiser")
+                mapping_handle.write(f'{elements[0]}\t{minimiser_id}\n')
