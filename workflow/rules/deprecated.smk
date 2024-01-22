@@ -65,3 +65,33 @@ rule convert_bin_to_raptor_fof:
                 # Raptor uses the basename of the first fastq file as bin identifier
                 minimiser_id = os.path.basename(fastq.split(" ")[0]).rstrip(".minimiser")
                 mapping_handle.write(f'{elements[0]}\t{minimiser_id}\n')
+
+rule raptor_prepare:
+    """
+    Prepare FASTQ files for raptor indexing
+    """
+    input:
+        sample_sheet = rules.convert_bin_to_raptor_fof.output.fof,
+    output:
+        minimiser_list = 'index/raptor/minimiser/minimiser.list'
+    params:
+        cut_off = int(config['indexing']['cutoff']),
+        kmer_size = int(config['indexing']['kmer_size']),
+        window = int(config['indexing']['kmer_size']) + 4,
+        output_dir = lambda wildcards, output: os.path.dirname(output.minimiser_list)
+    conda:
+        '../envs/raptor.yaml'
+    threads: 16
+    resources:
+        mem_mb = 50000
+    log:
+        'index/raptor/minimiser/minimiser_creation.log'
+    shell:
+        'raptor '
+        'prepare '
+        '--threads {threads} '
+        '--kmer {params.kmer_size} '
+        '--window {params.window} '
+        '--kmer-count-cutoff {params.cut_off} '
+        '--input {input.sample_sheet} '
+        '--output {params.output_dir} &> {log}'

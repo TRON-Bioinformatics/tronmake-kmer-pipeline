@@ -22,6 +22,8 @@ rule parse_ntcard:
         histo = "index/ntcard/{sample}.hist"
     output:
         parsed_histo = "index/ntcard/{sample}.ntcard"
+    threads: 1
+    message: 'Collecting k-mer cardinalities of all samples in indexing cohort'
     run:
         with open(input.histo, 'r') as file_handle, open(output.parsed_histo, 'w') as write_handle:
             f0, f1 = 0, 0
@@ -42,6 +44,8 @@ rule gather_ntcard:
     output:
         kmer_all = 'index/ntcard/experiments.ntcard.txt',
         kmer_all_sorted = 'index/ntcard/experiments.ntcard.sorted.txt'
+    threads: 1
+    message: "Sorting k-mer cardinalities in descending order"
     shell:
         '''
         printf 'experiment\\tF0\\tf1\\tnum_kmers\\n' > {output.kmer_all}
@@ -57,6 +61,10 @@ rule estimate_bf_size:
         fpr = float(config['indexing']['fpr']) * 100
     output:
         bloom_filter_size = 'index/kmindex/bloom_filter_size.txt'
+    message: "Estimating optimal Bloom filter size"
+    threads:
+    conda:
+        '../envs/python2.yaml'
     shell:
         '''
         largest_experiment="$(grep -v '#' {input.kmer_all_experiments} | head -n 1 | cut -f 4)"
