@@ -6,19 +6,26 @@ include: "rules/common.smk"
 
 validate_config(config)
 
-# Read sample sheet
+# Read sample sheet and return dummy dataframe if in query mode
 if config['modus']['indexing']:
     samples = read_sample_sheet(config['indexing']['samples'])
 else:
     samples = pd.DataFrame(columns=['bin_id', 'fastq'])
 
+# Import snakemake rules for query and index building
 include: "rules/query.smk"
 include: "rules/kmindex.smk"
 include: "rules/raptor.smk"
 
+# Those rules are mainly cat, grep, etc. shell commands wihtout any computational footprint 
 localrules:
-    convert_bin_to_fof,
-    convert_bin_to_raptor_fof
+    gather_raptor_minimisers,
+    raptor_sample_mapping,
+    parse_ntcard,
+    gather_ntcard,
+    estimate_bf_size,
+    write_kmtricks_fof,
+    kmindex
 
 rule all:
     input:

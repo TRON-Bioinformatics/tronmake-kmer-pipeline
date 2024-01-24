@@ -1,6 +1,9 @@
 import os.path as path
 
 rule ntcard:
+    """
+    Estimate k-mer cardinality of each sample to be stored in index
+    """
     input:
         fastq = get_ntcard_fastq
     output:
@@ -18,6 +21,9 @@ rule ntcard:
         'mv index/ntcard/{wildcards.sample}_k*.hist index/ntcard/{wildcards.sample}.hist'
 
 rule parse_ntcard:
+    """
+    Parse ntcard k-mer histogram to get F0 and f1 counts
+    """
     input:
         histo = "index/ntcard/{sample}.hist"
     output:
@@ -39,6 +45,9 @@ rule parse_ntcard:
             write_handle.write(result)
 
 rule gather_ntcard:
+    """
+    Collect all k-mer cardinality counts, combine into one list and sort by largest number of unique k-mers
+    """
     input:
         histo = expand("index/ntcard/{sample}.ntcard", sample = samples.bin_id)
     output:
@@ -54,15 +63,18 @@ rule gather_ntcard:
         '''
 
 rule estimate_bf_size:
+    """
+    Estimate theoretical optimal BF size
+    """
     input:
         kmer_all_experiments = rules.gather_ntcard.output.kmer_all_sorted
     params:
-        bf_size_exe = '../scripts/simple_bf_size_estimate.py',
+        bf_size_exe = workflow.source_path('../scripts/simple_bf_size_estimate.py'),
         fpr = float(config['indexing']['fpr']) * 100
     output:
         bloom_filter_size = 'index/kmindex/bloom_filter_size.txt'
     message: "Estimating optimal Bloom filter size"
-    threads:
+    threads: 1
     conda:
         '../envs/python2.yaml'
     shell:
@@ -73,6 +85,9 @@ rule estimate_bf_size:
         '''
 
 rule write_kmtricks_fof:
+    """
+    Create input sheet for kmtricks using bin_id : fq1 ; fq2 ; ... ; fqn
+    """
     output:
         fof = 'index/kmindex/samples.txt'
     run:
@@ -82,6 +97,9 @@ rule write_kmtricks_fof:
                 file_handle.write(f'{sample.bin_id}:{fastq}\n')
 
 rule kmtricks:
+    """
+    Run kmtricks pipeline to extract and store k-mers as BFs
+    """
     input:
         bf_size = rules.estimate_bf_size.output.bloom_filter_size,
         sample_sheet = rules.write_kmtricks_fof.output.fof
@@ -111,10 +129,15 @@ rule kmtricks:
         '--cpr'
 
 rule kmindex:
+    """
+    Register kmtricks BF matrix into kmindex directory
+    """
     input:
         kmtricks_index = rules.kmtricks.output.kmtricks_index
     output:
-        kmindex_index = directory('index/kmindex/global_index')
+        kmindex_index = directory('index/kmindex/global_index')   
+    params:
+        index_name = config['indexing'].get('index_name', 'samples'),
     conda:
         '../envs/kmindex.yaml'
     threads: 1
@@ -123,6 +146,6 @@ rule kmindex:
     shell:
         '''
         # Delete automatically generated output dir
-        kmindex register -i {output.kmindex_index} -n samples -p {input.kmtricks_index}
+        kmindex register -i {output.kmindex_index} -n {params.index_name} -p {input.kmtricks_index}
         '''
 

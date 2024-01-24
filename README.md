@@ -9,7 +9,7 @@
 
 
 The TronMake k-mer pipeline is part of the software solution k4neo for indexing large collections of healthy and tumor
-RNA-seq datasets to demonstarte tumor-specificity of (neo)antigen candidates.
+RNA-seq datasets to demonstrate tumor-specificity of (neo)antigen candidates.
 
 The workflow implements the best practice workflows of the state-of-the-art k-mer indexing methods [Raptor](https://github.com/seqan/raptor)
 and [kmindex](https://github.com/tlemane/kmindex).

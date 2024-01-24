@@ -36,7 +36,6 @@ def get_final_output():
     based on selected run mode.
     """
     final_output = []
-
     if config['modus']['query']:
         method = config['query']['method']
         final_output.append(
@@ -44,7 +43,7 @@ def get_final_output():
         )
     
     elif config['modus']['indexing']:
-        method = config['query']['method']
+        method = config['indexing']['method']
         match method:
             case "raptor":
                 final_output.append(
@@ -97,5 +96,5 @@ def get_memory_raptor(wildcards, input):
     memory to prevent thew job from failing
     """
 
-    memory=max(input.index.size_mb * 1.1, input.index.size_mb)
+    memory=max(input.size_mb * 1.1, input.size_mb)
     return memory
