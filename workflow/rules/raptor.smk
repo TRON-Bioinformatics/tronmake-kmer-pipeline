@@ -1,6 +1,9 @@
 import os.path
 
 rule raptor_prepare_per_sample:
+    """
+    Extract k+4 minimisers for each input sample
+    """
     input:
         bin_fastq = get_ntcard_fastq
     output:
@@ -28,6 +31,9 @@ rule raptor_prepare_per_sample:
         '''
 
 rule gather_raptor_minimisers:
+    """
+    Collect minimiser files of all samples to be included in the index.
+    """
     input:
         minimisers = expand('index/raptor/minimiser/{sample}/minimiser.list',
             sample=samples.bin_id.unique().tolist())
@@ -40,11 +46,11 @@ rule gather_raptor_minimisers:
         '''
 
 rule raptor_sample_mapping:
-    """Parse sample sheet to FOF
-
-    k4neo supports the kmindex sheet format as input. However, Raptor uses
-    it's own file of files format. This rule converts the sample sheet for raptor
-
+    """
+    Create a sample/bin to minimiser mapping for annotation. Raptor
+    uses the path of the first minimiser file in a bin as identifier in
+    the output. With this mapping these paths can be mapped back to the sample
+    ids used in the input sample sheet.
     """
     output:
         index_mapping = "index/raptor/index_mapping.txt"
@@ -60,7 +66,7 @@ rule raptor_sample_mapping:
 
 rule raptor_layout:
     """
-    Create HIBF layout file from minimiser files
+    Create HIBF layout file from minimiser files.WS
     """
     input:
         minimiser_list = rules.gather_raptor_minimisers.output.minimiser_list
@@ -85,7 +91,7 @@ rule raptor_layout:
 
 rule raptor_build:
     """
-    Build Raptor HIBF index from layout and minimiser files
+    Build Raptor HIBF index from layout and minimiser files.
     """
     input:
         layout_file = rules.raptor_layout.output.layout_file

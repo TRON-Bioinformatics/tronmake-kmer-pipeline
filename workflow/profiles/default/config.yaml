@@ -1,0 +1,11 @@
+jobs: 100
+use-conda: true
+use-singularity: false
+local-cores: 8
+conda-frontend: mamba
+latency-wait: 60
+default-resources:
+  mem_mb: 4096
+  threads: 2
+  runtime: 3600
+  account: "'$USER'"

@@ -67,7 +67,6 @@ def get_final_output():
 def read_sample_sheet(file):
     """
     Read sample sheet with fastq files for indexing
-
     """
     file_content = []
     with open(file, "r") as file_handle:

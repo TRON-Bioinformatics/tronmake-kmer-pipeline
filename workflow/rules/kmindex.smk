@@ -2,7 +2,7 @@ import os.path as path
 
 rule ntcard:
     """
-    Estimate k-mer cardinality of each sample to be stored in index
+    Estimate k-mer cardinality of each sample to be stored in index.
     """
     input:
         fastq = get_ntcard_fastq
@@ -13,6 +13,7 @@ rule ntcard:
         prefix = lambda wildcards, output: output.histo.rstrip(".hist")
     conda:
         '../envs/kmindex.yaml'
+    threads: 1
     shell:
         'ntcard '
         '--kmer={params.kmer_size} '
@@ -22,7 +23,7 @@ rule ntcard:
 
 rule parse_ntcard:
     """
-    Parse ntcard k-mer histogram to get F0 and f1 counts
+    Parse ntcard k-mer histogram to get F0 and f1 counts.
     """
     input:
         histo = "index/ntcard/{sample}.hist"
@@ -46,7 +47,7 @@ rule parse_ntcard:
 
 rule gather_ntcard:
     """
-    Collect all k-mer cardinality counts, combine into one list and sort by largest number of unique k-mers
+    Collect all k-mer cardinality counts, combine into one list and sort by largest number of unique k-mers.
     """
     input:
         histo = expand("index/ntcard/{sample}.ntcard", sample = samples.bin_id)
@@ -64,7 +65,7 @@ rule gather_ntcard:
 
 rule estimate_bf_size:
     """
-    Estimate theoretical optimal BF size
+    Estimate theoretical optimal bloom filter size.
     """
     input:
         kmer_all_experiments = rules.gather_ntcard.output.kmer_all_sorted
@@ -98,7 +99,7 @@ rule write_kmtricks_fof:
 
 rule kmtricks:
     """
-    Run kmtricks pipeline to extract and store k-mers as BFs
+    Run kmtricks pipeline to extract and store k-mers as BFs.
     """
     input:
         bf_size = rules.estimate_bf_size.output.bloom_filter_size,
@@ -106,8 +107,11 @@ rule kmtricks:
     output:
         kmtricks_index = directory('index/kmindex/kmtricks')
     threads: 16
+    resources:
+        mem_mb = 20000
     params:
         kmer_size = int(config['indexing']['kmer_size']),
+        index_mode = 'hash:bfc:bin' if config['indexing']['quantitative_index'] else 'hash:bf:bin'
     conda:
         '../envs/kmindex.yaml'
     shell:
@@ -119,7 +123,7 @@ rule kmtricks:
         '--run-dir {output.kmtricks_index} '
         '--kmer-size {params.kmer_size} '
         '--hard-min 1 '
-        '--mode hash:bf:bin '
+        '--mode {params.index_mode} '
         '--soft-min 2 '
         '--share-min 1 '
         '--bloom-size ${{bf_size}} '
@@ -130,7 +134,7 @@ rule kmtricks:
 
 rule kmindex:
     """
-    Register kmtricks BF matrix into kmindex directory
+    Register kmtricks BF matrix into kmindex directory.
     """
     input:
         kmtricks_index = rules.kmtricks.output.kmtricks_index
