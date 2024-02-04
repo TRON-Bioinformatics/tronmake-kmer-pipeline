@@ -19,6 +19,8 @@ rule raptor_prepare_per_sample:
         kmer_size = int(config['indexing']['kmer_size']),
         window = int(config['indexing']['kmer_size']) + 4,
     threads: 4
+    conda:
+        '../envs/raptor.yaml'
     log: 'index/raptor/minimiser/{sample}/log'
     message: "Extracting {params.kmer_size},{params.window} minimisers from sample {wildcards.sample}"
     shell:
