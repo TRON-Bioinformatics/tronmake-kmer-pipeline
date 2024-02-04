@@ -7,7 +7,7 @@ test_kmindex:
   script:
     - mamba env create -f snakemake.yaml
     - source /opt/conda/bin/activate Snakemake
-    - snakemake -p --config indexing='{method':' kmindex}'
+    - snakemake -p -j 2 --config indexing='{method':' kmindex}'
 
 test_raptor:
   image: condaforge/mambaforge:23.3.1-0
@@ -15,5 +15,5 @@ test_raptor:
   script:
     - mamba env create -f snakemake.yaml
     - source /opt/conda/bin/activate Snakemake
-    - snakemake -p --config indexing='{method':' raptor}'
+    - snakemake -p -j 2 --config indexing='{method':' raptor}'
 
