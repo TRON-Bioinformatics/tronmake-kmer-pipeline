@@ -1,6 +1,7 @@
 import os
 import sys
 
+container: "docker://condaforge/mambaforge:23.11.0-0"
 configfile: workflow.source_path("../config/config.yaml")
 include: "rules/common.smk"
 
@@ -30,4 +31,5 @@ localrules:
 rule all:
     input:
         get_final_output()
+
 

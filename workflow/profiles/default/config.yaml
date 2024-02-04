@@ -1,9 +1,11 @@
+executor: local
 jobs: 100
 use-conda: true
 use-singularity: false
 local-cores: 8
 conda-frontend: mamba
 latency-wait: 60
+rerun-triggers: mtime
 default-resources:
   mem_mb: 4096
   threads: 2

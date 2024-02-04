@@ -85,7 +85,7 @@ def get_ntcard_fastq(wildcards):
         fastq = fastq.item()
     except AttributeError as error:
         return ''
-    # Our sample sheet format allows the following delimiters ";"
+    # Our sample sheet format allows the following delimiters ","
     fastq = fastq.split(',')
     return fastq
 

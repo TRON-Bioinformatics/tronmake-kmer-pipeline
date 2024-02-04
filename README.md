@@ -18,15 +18,16 @@ Depending on the selected k-mer method the workflow consist of different steps.
 
 **Raptor**
 
-* Extracting minimiser from raw fasta files (k+4)
+* Extracting minimiser from raw fasta files (`k+4``)
 * Creating a HIBF layout 
-* Creating HIBF index with w,k schema
+* Creating HIBF index with `w,k`` schema
 
 **Kmindex**
 
 * Estimate k-mer cardinality of individual samples
 * Estimate optimal Bloom filter size based on k-mer cardinality
-* Extracting k-mers with Kmtricks and indexing with Kmindex
+* Extracting k-mers with Kmtricks 
+* Creation of global meta-index with Kmindex
 
 
 
@@ -36,20 +37,27 @@ Depending on the selected k-mer method the workflow consist of different steps.
 In general we recommend running the workflow from the k4neo python package. However, you can also
 execute it manually to create k-mer indices and to execute queries against it. 
 
-Download the project and run as follows. Modify the [config file](config/config.yaml):
+Download the project and run as follows. Modify the [config file](config/config.yaml) to fit your needs
+and execute the workflow (1). You can also change the parameters on the command line (2).
 
 ```bash
+
+# (1) Run pipeline using custom config file
 snakemake --use-conda -j 24
+
+# Create k-mer index with raptor
+snakemake --config modus={indexing:true} indexing={samples:/path/to/your/samples, method:raptor}
+
 ```
 
 ### Input tables
 
 The table with fastq files expects two tab-separated columns with a header. Multiple FASTQs can be provided separated by commas.
 
-|bin_id | fastq|
-|:-----:|:-----:|
-|sample_1| /path/to/sample_1.fastq.gz
-|sample_2| /path/to/sample_2.fastq.gz,/path/to/sample_2_2.fastq.gz|
+| bin_id   | fastq                                                   |
+|:--------:|:-------------------------------------------------------:|
+| sample_1 | /path/to/sample_1.fastq.gz                              |
+| sample_2 | /path/to/sample_2.fastq.gz,/path/to/sample_2_2.fastq.gz |
 
 ## References
 

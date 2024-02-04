@@ -1,4 +1,3 @@
-import os.path as path
 
 rule ntcard:
     """

@@ -1,6 +1,6 @@
 modus:
-  query: True
-  indexing: False
+  query: False
+  indexing: True
 
 indexing:
   samples: examples/samples.tsv
@@ -11,7 +11,7 @@ indexing:
   quantitative_index: false
 
 query:
-  index: index/raptor/raptor.index
+  index: examples/raptor.index
   query_fasta: examples/query.fasta
   kmer_ratio: 0.7
   method: "raptor"
