@@ -18,15 +18,15 @@ Depending on the selected k-mer method the workflow consist of different steps.
 
 **Raptor**
 
-* Extracting minimiser from raw fasta files (`k+4``)
+* Extracting minimiser from raw fasta files (`k+4`)
 * Creating a HIBF layout 
-* Creating HIBF index with `w,k`` schema
+* Creating HIBF index with `w,k` schema
 
 **Kmindex**
 
 * Estimate k-mer cardinality of individual samples
 * Estimate optimal Bloom filter size based on k-mer cardinality
-* Extracting k-mers with Kmtricks 
+* Extracting k-mers with Kmtricks (presence/absence or quantitative index)
 * Creation of global meta-index with Kmindex
 
 
