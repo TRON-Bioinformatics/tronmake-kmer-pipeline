@@ -1,0 +1,19 @@
+stages:
+  - test
+
+test_kmindex:
+  image: condaforge/mambaforge:23.3.1-0
+  stage: test
+  script:
+    - mamba env create -f snakemake.yaml
+    - source /opt/conda/bin/activate Snakemake
+    - snakemake -p -j 2 --config indexing='{method':' kmindex}'
+
+test_raptor:
+  image: condaforge/mambaforge:23.3.1-0
+  stage: test
+  script:
+    - mamba env create -f snakemake.yaml
+    - source /opt/conda/bin/activate Snakemake
+    - snakemake -p -j 2 --config indexing='{method':' raptor}'
+
