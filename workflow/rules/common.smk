@@ -30,7 +30,7 @@ def validate_config(config):
 def verbose_logs(verbose: bool = True):
     pass
 
-def get_final_output():
+def get_final_output(samples: pd.DataFrame):
     """
     Populate final output for target rule. Final output is determined
     based on selected run mode.
@@ -55,6 +55,10 @@ def get_final_output():
             case "kmindex":
                 final_output.append(
                     'index/kmindex/global_index'
+                )
+            case "cuttlefish":
+                final_output.extend(
+                    expand('index/cuttlefish/{sample}_cdbg.fa.gz, sample = samples)
                 )
             case _:
                 sys.exit(1)
