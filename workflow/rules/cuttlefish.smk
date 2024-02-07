@@ -1,8 +1,11 @@
 rule cuttlefish:
+    """
+    Extract compacted DBG from sequencing samples
+    """
     input:
         fastq = get_ntcard_fastq()
     output:
-        dbg = 'index/cuttlefish/{sample}_cdbg.fa'
+        dbg = temp('index/cuttlefish/{sample}_cdbg.fa')
         json = 'index/cuttlefish/{sample}_cdbg.json'
     threads: 8
     resources:
@@ -25,6 +28,17 @@ rule cuttlefish:
         '--cutoff {params.cutoff} '
         '--seq={params.input_csv} '
         '--threads {threads} '
-        '--output {params.prefix}'
+        '--output {params.prefix} &> {log}'
+
+rule compress_cDBG:
+    input:
+        dbg = rules.cuttlefish.output.dbg
+    output:
+        compress_dbg = 'index/cuttlefish/{sample}_cdbg.fa.gz'
+    threads: 1
+    shell:
+        '''
+        gzip {input.dbg}
+        '''
         
 
