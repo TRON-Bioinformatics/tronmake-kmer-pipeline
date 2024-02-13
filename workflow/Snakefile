@@ -17,6 +17,7 @@ else:
 include: "rules/query.smk"
 include: "rules/kmindex.smk"
 include: "rules/raptor.smk"
+include: "rules/cuttlefish.smk"
 
 # Those rules are mainly cat, grep, etc. shell commands wihtout any computational footprint 
 localrules:
@@ -30,6 +31,6 @@ localrules:
 
 rule all:
     input:
-        get_final_output()
+        get_final_output(samples)
 
 

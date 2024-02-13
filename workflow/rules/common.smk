@@ -58,7 +58,7 @@ def get_final_output(samples: pd.DataFrame):
                 )
             case "cuttlefish":
                 final_output.extend(
-                    expand('index/cuttlefish/{sample}_cdbg.fa.gz, sample = samples)
+                    expand('index/cuttlefish/{sample}/{sample}_cdbg.fa.gz', sample = samples.bin_id)
                 )
             case _:
                 sys.exit(1)

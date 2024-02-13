@@ -1,4 +1,3 @@
-executor: local
 jobs: 100
 use-conda: true
 use-singularity: false
