@@ -3,7 +3,7 @@ modus:
   indexing: True
 
 indexing:
-  samples: all_bin_paths.txt
+  samples: examples/samples.tsv
   kmer_size: 21
   cutoff: 2
   method: "kmindex"
