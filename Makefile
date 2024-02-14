@@ -5,4 +5,4 @@ clean:
 	test -d query && rm -rf query
 
 test:
-	pytest --git-aware --symlink
+	pytest --git-aware --symlink --stderr-bytes 100000
