@@ -2,7 +2,7 @@
   command: >
     bash -c "
     tar -xvzf examples/kmindex.tar.gz -C examples;
-    snakemake -p -j1 --configfile tests/configs/query.yaml --config query='{method':' kmindex, index':' examples/kmindex/global_index}'
+    snakemake -p --cores 1 --configfile tests/configs/query.yaml --config query='{method':' kmindex, index':' examples/kmindex/global_index}'
     "
   files:
     - path: "query/kmindex/kmindex_search.txt"
