@@ -6,7 +6,7 @@ indexing:
   samples: tests/samples.tsv
   kmer_size: 21
   cutoff: 2
-  method: "raptor"
+  method: raptor
   fpr: 0.05
   quantitative_index: False
 
@@ -14,6 +14,6 @@ query:
   index: examples/raptor.index
   query_fasta: examples/query.fasta
   kmer_ratio: 0.7
-  method: "raptor"
+  method: raptor
   findere_z: 2
 

@@ -1,6 +1,6 @@
 - name: raptor_query 
   command: >
-    snakemake -p --configfile tests/configs/query.yaml --config query='{method':' raptor, index':' examples/raptor.index}'
+    snakemake -p --configfile tests/configs/query.yaml --config query='{method':'raptor, index':'examples/raptor.index}'
   files:
     - path: "query/raptor/raptor_search.txt"
       md5sum: "6d28ad2859f1a59d7b6fbaa84bb58717"
