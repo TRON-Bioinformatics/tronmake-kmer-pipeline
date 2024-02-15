@@ -4,6 +4,8 @@ import os
 import sys
 import argparse
 import pathlib
+import tempfile
+import yaml
 from snakemake import snakemake
 from logzero import logger
 
@@ -25,14 +27,19 @@ def indexing_pipeline(args):
         "fpr": args.fpr,
         "quantitative_index": args.quantitative
     }
-    return_code = snakemake(__pipeline__,
-                            workdir=args.workdir,
-                            config=wf_config,
-                            rerun_triggers="mtime")
-    if not return_code:
-        logger.error("Pipeline execution failed")
-    else:
-        logger.info("Pipeline finished")
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_config:
+        yaml.dump(wf_config, temp_config)
+        temp_config.close()
+
+        return_code = snakemake(__pipeline__,
+                                workdir=args.workdir,
+                                configfiles=[temp_config.name, ],
+                                use_conda=True,
+                                slurm=args.slurm)
+        if not return_code:
+            logger.error("Pipeline execution failed")
+        else:
+            logger.info("Pipeline finished")
 
 def query_pipeline(args):
     wf_config = {}
@@ -45,14 +52,18 @@ def query_pipeline(args):
         "method": args.method,
         "findere_z": args.findere
     }
-    return_code = snakemake(__pipeline__,
-                            workdir=args.workdir,
-                            config=wf_config,
-                            rerun_triggers="mtime")
-    if not return_code:
-        logger.error("Pipeline execution failed")
-    else:
-        logger.info("Pipeline finished")
+    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_config:
+        yaml.dump(wf_config, temp_config)
+        temp_config.close()
+        return_code = snakemake(__pipeline__,
+                                workdir=args.workdir,
+                                configfiles=[temp_config.name, ],
+                                use_conda=True,
+                                slurm=args.slurm)
+        if not return_code:
+            logger.error("Pipeline execution failed")
+        else:
+            logger.info("Pipeline finished")
 
 
 def add_index_parser_args(parser):
@@ -66,13 +77,15 @@ def add_index_parser_args(parser):
         "--kmer",
         dest="kmer",
         help="kmer size used for index construction",
-        default=21
+        default=21,
+        type=int
     )
     parser.add_argument(
         "--cutoff",
         dest="cutoff",
         help="Cutoof to define solid and weak k-mers. Only solid k-mers are included in index",
-        default=2
+        default=2,
+        type=int
     )
     parser.add_argument(
         "--method",
@@ -85,6 +98,12 @@ def add_index_parser_args(parser):
         dest="fpr",
         help="FPR for kmindex/Raptor indexing",
         default=0.05, type=float
+    )
+    parser.add_argument(
+        "--workdir",
+        dest="workdir",
+        help="Work directory for pipeline execution",
+        default=pathlib.Path(__file__).parent
     )
     parser.add_argument(
         "--quantitative",
@@ -118,13 +137,21 @@ def add_query_parser_args(parser):
         "--detection-ratio",
         dest="detection_ratio",
         help="k-mer detection ratio / Percentage of shared k-mers for presence/absence detection",
-        default=0.7
+        default=0.7,
+        type=float
     )
     parser.add_argument(
         "--findere",
         dest="findere",
         help="Z-value of findere algorithm. Only relevant when method = kmindex",
-        default=2
+        default=2,
+        type=int
+    )
+    parser.add_argument(
+        "--workdir",
+        dest="workdir",
+        help="Work directory for pipeline execution",
+        default=pathlib.Path(__file__).parent
     )
     parser.set_defaults(func=query_pipeline)
 
@@ -135,6 +162,12 @@ def tronmake_cli():
         description="TronMake k-mer pipeline v{}".format(__version__),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
         epilog=epilog,
+    )
+    parser.add_argument(
+        "--slurm",
+        dest="slurm",
+        help="Execute snakemake with slurm support",
+        action="store_true"
     )
 
     subparsers = parser.add_subparsers(description="Commands")

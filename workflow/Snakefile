@@ -1,10 +1,11 @@
 import os
 import sys
+from snakemake.utils import validate
 
 container: "docker://condaforge/mambaforge:23.11.0-0"
 configfile: workflow.source_path("../config/config.yaml")
 include: "rules/common.smk"
-
+validate(config, workflow.source_path("../config/test_config.yaml"))
 validate_config(config)
 
 # Read sample sheet and return dummy dataframe if in query mode
