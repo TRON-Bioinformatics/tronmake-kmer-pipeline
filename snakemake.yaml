@@ -8,5 +8,5 @@ dependencies:
   - python
   - pip
   - pandas
-  - snakemake-minimal=7.32.4
+  - snakemake-minimal=7.32.2
   - make
