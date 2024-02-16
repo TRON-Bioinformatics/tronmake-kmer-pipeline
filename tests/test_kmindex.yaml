@@ -2,7 +2,7 @@
   command: >
     bash -c "
     snakemake -p --configfile tests/configs/kmindex.yaml ; 
-    snakemake -p --cores 1 --configfile tests/configs/query.yaml --config query='{method':'kmindex, index':'index/kmindex/global_index}'
+    snakemake -p --cores 1 --configfile tests/configs/query.yaml --config query='{method':' kmindex, index':' index/kmindex/global_index}'
     "
   files:
     - path: "index/kmindex/bloom_filter_size.txt"
