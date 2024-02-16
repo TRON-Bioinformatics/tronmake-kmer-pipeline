@@ -2,8 +2,8 @@
 
 <!-- badges: start -->
 
-[![Release](https://img.shields.io/badge/release-v0.0.1-blue?style=flat)](https://gitlab.rlp.net/tron/kmer_pipeline)
-[![Snakemake](https://img.shields.io/badge/snakemake-7.31.0-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
+[![Release](https://img.shields.io/badge/release-v1.0.0-blue?style=flat)](https://gitlab.rlp.net/tron/kmer_pipeline)
+[![Snakemake](https://img.shields.io/badge/snakemake-7.32.4-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 
 <!-- badges: end -->
 
@@ -29,6 +29,10 @@ Depending on the selected k-mer method the workflow consist of different steps.
 * Extracting k-mers with Kmtricks (presence/absence or quantitative index)
 * Creation of global meta-index with Kmindex
 
+**Cuttlefish**
+
+* Extract k-mers and construct compacted De Bruijn Graphs (cDBG)
+* Compress maximal unitigs
 
 
 
@@ -39,6 +43,59 @@ execute it manually to create k-mer indices and to execute queries against it.
 
 Download the project and run as follows. Modify the [config file](config/config.yaml) to fit your needs
 and execute the workflow (1). You can also change the parameters on the command line (2).
+
+We also provide a python wrapper to execute the workflow and configure the pipeline based on the arguments passed.
+
+### Wrapper execution (recommended)
+
+```bash
+
+# Create k-mer index with raptor
+python tronmake-kmer.py \
+    index \
+    --samples examples/samples.tsv \
+    --kmer 21 \
+    --method raptor \
+    --fpr 0.05 \
+    --workdir /path/to/index \
+    --slurm
+
+# Create k-mer index with kmindex
+python tronmake-kmer.py \
+    index \
+    --samples examples/samples.tsv \
+    --kmer 21 \
+    --method kmindex \
+    --fpr 0.05 \
+    --workdir /path/to/index \
+    --slurm
+
+# Query raptor k-mer index 
+python tronmake-kmer.py \
+    query \
+    --index <path/to/index>/results/raptor/raptor.index  \
+    --method raptor \
+    --fasta examples/query.fasta \
+    --detection-ratio 0.7 \
+    --workdir /path/to/query \
+    --slurm
+
+# Query kmindex k-mer index 
+python tronmake-kmer.py \
+    query \
+    --index <path/to/index>/results/kmindex/global_index \
+    --method kmindex \
+    --fasta examples/query.fasta \
+    --detection-ratio 0.7 \
+    --workdir /path/to/query \
+    --slurm
+
+
+```
+
+
+
+### Traditional execution
 
 ```bash
 
