@@ -1,19 +1,11 @@
 stages:
   - test
 
-test_kmindex:
+test_pipeline:
   image: condaforge/mambaforge:23.3.1-0
   stage: test
   script:
-    - mamba env create -f snakemake.yaml
+    - mamba env create -f tests/ci.yaml
     - source /opt/conda/bin/activate Snakemake
-    - snakemake -p -j 2 --config indexing='{method':' kmindex}'
-
-test_raptor:
-  image: condaforge/mambaforge:23.3.1-0
-  stage: test
-  script:
-    - mamba env create -f snakemake.yaml
-    - source /opt/conda/bin/activate Snakemake
-    - snakemake -p -j 2 --config indexing='{method':' raptor}'
-
+    - pip install pytest-workflow
+    - make test

@@ -1,0 +1,7 @@
+name: cuttlefish
+channels:
+  - bioconda
+  - conda-forge
+dependencies:
+  - cuttlefish
+  - gzip
