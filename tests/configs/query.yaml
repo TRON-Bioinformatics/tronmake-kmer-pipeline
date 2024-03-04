@@ -1,12 +1,12 @@
 modus:
-  query: False
-  indexing: True
+  query: True
+  indexing: False
 
 indexing:
-  samples: examples/samples.tsv
+  samples: tests/samples.tsv
   kmer_size: 21
   cutoff: 2
-  method: "kmindex"
+  method: "cuttlefish"
   fpr: 0.05
   quantitative_index: False
 

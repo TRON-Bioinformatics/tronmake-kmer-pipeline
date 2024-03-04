@@ -3,10 +3,10 @@ modus:
   indexing: True
 
 indexing:
-  samples: examples/samples.tsv
+  samples: tests/samples.tsv
   kmer_size: 21
   cutoff: 2
-  method: "kmindex"
+  method: "cuttlefish"
   fpr: 0.05
   quantitative_index: False
 

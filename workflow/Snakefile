@@ -1,10 +1,11 @@
 import os
 import sys
+from snakemake.utils import validate
 
 container: "docker://condaforge/mambaforge:23.11.0-0"
 configfile: workflow.source_path("../config/config.yaml")
 include: "rules/common.smk"
-
+validate(config, workflow.source_path("../config/validate_config.yaml"))
 validate_config(config)
 
 # Read sample sheet and return dummy dataframe if in query mode
@@ -17,6 +18,7 @@ else:
 include: "rules/query.smk"
 include: "rules/kmindex.smk"
 include: "rules/raptor.smk"
+include: "rules/cuttlefish.smk"
 
 # Those rules are mainly cat, grep, etc. shell commands wihtout any computational footprint 
 localrules:
@@ -30,6 +32,6 @@ localrules:
 
 rule all:
     input:
-        get_final_output()
+        get_final_output(samples)
 
 

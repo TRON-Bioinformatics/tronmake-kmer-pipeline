@@ -3,7 +3,7 @@ modus:
   indexing: True
 
 indexing:
-  samples: examples/samples.tsv
+  samples: tests/samples.tsv
   kmer_size: 21
   cutoff: 2
   method: "kmindex"
@@ -11,9 +11,9 @@ indexing:
   quantitative_index: False
 
 query:
-  index: examples/raptor.index
+  index: examples/kmindex/G_21
   query_fasta: examples/query.fasta
   kmer_ratio: 0.7
-  method: "raptor"
+  method: "kmindex"
   findere_z: 2
 

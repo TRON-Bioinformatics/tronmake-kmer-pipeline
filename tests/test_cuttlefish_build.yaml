@@ -1,0 +1,13 @@
+- name: cuttlefish_index_build
+  command: >
+    snakemake -p --configfile tests/configs/cuttlefish.yaml
+  files:
+  - path: "index/cuttlefish/1/1_cdbg.json"
+    contains:
+      - '"input": "examples/example_data/64/reads/bin_00.fastq"'
+      - '"k": 21'
+      - '"output prefix": "index/cuttlefish/1/1_cdbg"'
+  - path: "index/cuttlefish/1/1_cdbg.fa.gz"
+    contains:
+      - "CCCTATAAAAAAACGTTTCTTCAAAGATA"
+      - "ACATCCACGTGGAAAAGATACTGGACGAATCGGCATCATCCCAGCGGATTAATGTTTG"

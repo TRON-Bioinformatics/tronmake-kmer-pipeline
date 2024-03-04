@@ -1,0 +1,22 @@
+- name: kmindex_index_build
+  command: >
+    bash -c "
+    snakemake -p --configfile tests/configs/kmindex.yaml ; 
+    snakemake -p --cores 1 --configfile tests/configs/query.yaml --config query='{method':' kmindex, index':' index/kmindex/global_index}'
+    "
+  files:
+    - path: "index/kmindex/bloom_filter_size.txt"
+      contains: 
+        - "1757950"
+    - path: "index/kmindex/samples.txt"
+      contains:
+        - "1:examples/example_data/64/reads/bin_00.fastq"
+    - path: index/kmindex/global_index/index.json
+      contains:
+        - '"bloom_size": 1757952'
+        - '"kmindex_version": "0.5.2"'
+        - '"smer_size": 21'
+        - '"nb_partitions": 4'
+    - path: "query/kmindex/kmindex_search.txt"
+      contains:
+        - "samples:1_1/1	0.9989773178251977"
