@@ -7,5 +7,5 @@ test_pipeline:
   script:
     - mamba env create -f tests/ci.yaml
     - source /opt/conda/bin/activate Snakemake
-    - pip install pytest-workflow
+    - pip install pytest-workflow==2.0.1 pytest==8.0.2
     - make test
