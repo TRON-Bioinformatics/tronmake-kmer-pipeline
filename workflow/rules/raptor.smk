@@ -18,7 +18,7 @@ rule raptor_prepare_per_sample:
         cut_off = int(config['indexing']['cutoff']),
         kmer_size = int(config['indexing']['kmer_size']),
         window = int(config['indexing']['kmer_size']) + 4,
-    threads: 4
+    threads: 1
     conda:
         '../envs/raptor.yaml'
     log: 'index/raptor/minimiser/{sample}/log'
@@ -79,7 +79,7 @@ rule raptor_layout:
     conda:
         '../envs/raptor.yaml'
     log: 'index/raptor/layout.log'
-    threads: 16
+    threads: 1
     resources:
         mem_mb = 500
     message: "Determining HIBF index layout"
