@@ -27,7 +27,7 @@ def indexing_pipeline(args):
         "fpr": args.fpr,
         "quantitative_index": args.quantitative
     }
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_config:
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
 
@@ -53,7 +53,7 @@ def query_pipeline(args):
         "method": args.method,
         "findere_z": args.findere
     }
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_config:
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
         return_code = snakemake(__pipeline__,
