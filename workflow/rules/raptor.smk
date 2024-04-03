@@ -104,7 +104,7 @@ rule raptor_build:
     log: 'index/raptor/build.log'
     threads: 16
     resources:
-        mem_mb=lambda wildcards, input: get_memory_raptor_build(wildcards, input)
+        mem_mb=lambda wildcards, input: get_memory_raptor_build(wildcards)
     message: "Building Raptor index"
     shell:
         'raptor '
