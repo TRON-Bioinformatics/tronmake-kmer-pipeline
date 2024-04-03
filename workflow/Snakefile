@@ -24,6 +24,7 @@ include: "rules/cuttlefish.smk"
 localrules:
     gather_raptor_minimisers,
     raptor_sample_mapping,
+    raptor_layout,
     parse_ntcard,
     gather_ntcard,
     estimate_bf_size,
