@@ -39,7 +39,7 @@ rule kmindex_query:
         output_dir = lambda wildcards, output: path.join(path.dirname(output.search_results), "search"),
         findere_z = f"--zvalue {config['query']['findere_z']}" \
             if config['query']['findere_z'] in [1,2,3,4,5,6] else ''
-    threads: 8
+    threads: 16
     conda:
         '../envs/kmindex.yaml'
     log: 'query/kmindex/search.log'

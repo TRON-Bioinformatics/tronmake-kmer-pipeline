@@ -93,12 +93,32 @@ def get_ntcard_fastq(wildcards):
     fastq = fastq.split(',')
     return fastq
 
+def get_number_of_bin(samples):
+    """
+    Get number of samples in input sample sheet
+    """
+    return samples.shape[0]
+    
+
 def get_memory_raptor(wildcards, input):
     """
     Calculate memory required for raptor queries.
     Memory consumption is approximately the index size on disk. We add some additional 
-    memory to prevent thew job from failing
+    memory to prevent the job from failing
     """
 
     memory=max(input.size_mb * 1.1, input.size_mb)
     return memory
+
+def get_memory_raptor_build(wildcards):
+    """
+    Calculate memory required for raptor build step.
+    Memory consumption is growing approximately linearly with number of bins to be indexed.
+    The scaling factor was determined by indexing multiple batches of sequencing data to assess
+    scalability. We add some additional memory to prevent the job from failing.
+    scaling_factor: ~0.15 
+    """
+    samples_to_index = get_number_of_bin(samples)
+    estimated_memory = round(samples_to_index * 0.15 * 1024)
+    estimated_memory = max(estimated_memory, 150000)
+    return estimated_memory

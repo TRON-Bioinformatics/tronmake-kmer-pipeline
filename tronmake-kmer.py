@@ -27,7 +27,7 @@ def indexing_pipeline(args):
         "fpr": args.fpr,
         "quantitative_index": args.quantitative
     }
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_config:
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
 
@@ -35,7 +35,8 @@ def indexing_pipeline(args):
                                 workdir=args.workdir,
                                 configfiles=[temp_config.name, ],
                                 use_conda=True,
-                                slurm=args.slurm)
+                                slurm=args.slurm,
+                                cores=args.jobs)
         if not return_code:
             logger.error("Pipeline execution failed")
         else:
@@ -52,14 +53,15 @@ def query_pipeline(args):
         "method": args.method,
         "findere_z": args.findere
     }
-    with tempfile.NamedTemporaryFile(mode="w", delete=False) as temp_config:
+    with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
         return_code = snakemake(__pipeline__,
                                 workdir=args.workdir,
                                 configfiles=[temp_config.name, ],
                                 use_conda=True,
-                                slurm=args.slurm)
+                                slurm=args.slurm,
+                                cores=args.jobs)
         if not return_code:
             logger.error("Pipeline execution failed")
         else:
@@ -111,6 +113,12 @@ def add_index_parser_args(parser):
         help="Create quantitative kmindex index. EXPERIMENTAL",
         action='store_true'
     )
+    parser.add_argument(
+        "--jobs",
+        dest="jobs",
+        help="Number of local CPUs or number of jobs for slurm submission",
+        default=50
+    )
     parser.set_defaults(func=indexing_pipeline)
 
 
@@ -152,6 +160,12 @@ def add_query_parser_args(parser):
         dest="workdir",
         help="Work directory for pipeline execution",
         default=pathlib.Path(__file__).parent
+    )
+        parser.add_argument(
+        "--jobs",
+        dest="jobs",
+        help="Number of local CPUs or number of jobs for slurm submission",
+        default=16
     )
     parser.set_defaults(func=query_pipeline)
 
