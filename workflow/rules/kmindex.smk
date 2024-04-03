@@ -111,7 +111,7 @@ rule kmtricks:
     params:
         kmer_size = int(config['indexing']['kmer_size']),
         index_mode = 'hash:bfc:bin' if config['indexing']['quantitative_index'] else 'hash:bf:bin'
-        abundance_class = f"-nb-cell 1000000 --bitw {config['indexing'].get('abundance_classes', 2)} \
+        abundance_class = f"-nb-cell 1000000 --bitw {config['indexing'].get('abundance_classes', 2)}" \
             if config['indexing']['quantitative_index'] else ''
     conda:
         '../envs/kmindex.yaml'
