@@ -6,10 +6,10 @@ rule query_raptor:
     Query raptor index with sequences in fasta file.
     """
     input:
-        index = config['query']['index'],
+        index = get_index,
         query_fasta = config['query']['query_fasta']
     output:
-        search_results = 'query/raptor/raptor_search.txt'
+        search_results = 'query/raptor/{subindex}/search.txt'
     params:
         theta = config['query']['kmer_ratio']
     threads: 1
@@ -17,7 +17,7 @@ rule query_raptor:
         mem_mb = lambda wildcards, input: get_memory_raptor(wildcards, input)
     conda:
         '../envs/raptor.yaml'
-    log: 'query/raptor/search.log'
+    log: 'query/raptor/{subindex}_search.log'
     shell:
         'raptor '
         'search '
@@ -31,10 +31,10 @@ rule kmindex_query:
     Query kmindex index with sequences in fasta file.
     """
     input:
-        index = config['query']['index'],
+        index = get_index,
         query_fasta = config['query']['query_fasta']
     output:
-        search_results = 'query/kmindex/kmindex_search.txt'
+        search_results = 'query/kmindex/{subindex}/search.txt'
     params:
         output_dir = lambda wildcards, output: path.join(path.dirname(output.search_results), "search"),
         findere_z = f"--zvalue {config['query']['findere_z']}" \
@@ -42,7 +42,7 @@ rule kmindex_query:
     threads: 16
     conda:
         '../envs/kmindex.yaml'
-    log: 'query/kmindex/search.log'
+    log: 'query/kmindex/{subindex}_search.log'
     shell:
         'kmindex '
         'query '

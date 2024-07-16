@@ -11,8 +11,10 @@ validate_config(config)
 # Read sample sheet and return dummy dataframe if in query mode
 if config['modus']['indexing']:
     samples = read_sample_sheet(config['indexing']['samples'])
+    index_struct = {}
 else:
     samples = pd.DataFrame(columns=['bin_id', 'fastq'])
+    index_struct = read_index_struct(config['query']['index'])
 
 # Import snakemake rules for query and index building
 include: "rules/query.smk"
@@ -33,6 +35,6 @@ localrules:
 
 rule all:
     input:
-        get_final_output(samples)
+        get_final_output(samples, index_struct)
 
 

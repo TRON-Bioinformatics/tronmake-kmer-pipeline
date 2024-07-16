@@ -1,9 +1,9 @@
-- name: raptor_query 
+- name: raptor_query
   command: >
-    snakemake -p --configfile tests/configs/query.yaml --config query='{method':'raptor, index':'examples/raptor.index}'
+    snakemake -p --configfile tests/configs/query.yaml --config query='{method':' raptor, index':' tests/configs/raptor_index.yaml}'
   files:
-    - path: "query/raptor/raptor_search.txt"
-      md5sum: "6d28ad2859f1a59d7b6fbaa84bb58717"
+    - path: "query/raptor/raptor_test_index/search.txt"
+      md5sum: "259f242f2f08118151eb88b7c0735dde"
       contains:
         - "## Percentage threshold = 0.7"
         - "1_1/1	50"
