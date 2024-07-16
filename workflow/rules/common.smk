@@ -43,7 +43,7 @@ def get_final_output(samples: pd.DataFrame, index_struct: dict):
     """
     final_output = []
     if config['modus']['query']:
-        for index_id, index_properties in kmer_indices.items():
+        for index_id, index_properties in index_struct.items():
             method = index_properties.get('method', None)
             if method is None:
                 raise ValueError(f"k-mer method not specified for index: {index_id}")
