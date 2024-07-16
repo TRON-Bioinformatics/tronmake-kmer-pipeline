@@ -1,5 +1,5 @@
 import pandas as pd
-
+import yaml
 
 def validate_config(config):
     """
@@ -27,20 +27,27 @@ def validate_config(config):
         assert int(config["indexing"]['kmer_size']) in list(range(19,32)), \
             "k-mer size not supported"
 
+def check_index_struct(index_struct):
+    """
+    Dummy method. Requires proper checking of index struct
+    """
+    return True
+
 def verbose_logs(verbose: bool = True):
     pass
 
-def get_final_output(samples: pd.DataFrame):
+def get_final_output(samples: pd.DataFrame, index_struct: dict):
     """
     Populate final output for target rule. Final output is determined
     based on selected run mode.
     """
     final_output = []
     if config['modus']['query']:
-        method = config['query']['method']
-        final_output.append(
-            f'query/{method}/{method}_search.txt'
-        )
+        for index_id, index_properties in kmer_indices.items():
+            method = index_properties.get('method', None)
+            if method is None:
+                raise ValueError(f"k-mer method not specified for index: {index_id}")
+            final_output.append(f'query/{method}/{index_id}/search.txt')
     
     elif config['modus']['indexing']:
         method = config['indexing']['method']
@@ -82,6 +89,17 @@ def read_sample_sheet(file):
     samples = pd.DataFrame(file_content)
     return samples
 
+def read_index_struct(file):
+    """
+    Read meta index of different raptor indices
+    """
+    with open(file, 'r') as file_handle:
+        index_struct = yaml.safe_load(file_handle)
+    # ToDo add sanity checks if meta index file is correctly formatted
+    if not check_index_struct(index_struct):
+        sys.exit(1)
+    return index_struct
+
 def get_ntcard_fastq(wildcards):
     sample = samples.query('bin_id == @wildcards.sample')
     fastq = sample.get('fastq')
@@ -122,3 +140,8 @@ def get_memory_raptor_build(wildcards):
     estimated_memory = round(samples_to_index * 0.15 * 1024)
     estimated_memory = max(estimated_memory, 150000)
     return estimated_memory
+
+def get_index(wildcards):
+    index_to_query = index_struct.get(wildcards.subindex)
+    path = index_to_query.get('path', '')
+    return path
