@@ -6,7 +6,7 @@ import argparse
 import pathlib
 import tempfile
 import yaml
-from snakemake import snakemake
+import subprocess
 from logzero import logger
 
 
@@ -14,6 +14,15 @@ __version__ = "1.0.0"
 __pipeline__ = pathlib.Path(__file__).parent / 'workflow' / 'Snakefile'
 
 epilog = "Copyright (c) 2023 TRON gGmbH (See LICENSE for licensing details)"
+
+def execute_cmd(cmd, working_dir = "."):
+    """This function runs a command into a subprocess."""
+    logging.info("-> Executing CMD: {}".format(cmd))
+    p = subprocess.run(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE, cwd = working_dir, shell=False)
+    if p.returncode != 0:
+        logging.error(p.stderr)
+    return p.returncode
+
 
 def indexing_pipeline(args):
     wf_config = {}
@@ -30,42 +39,49 @@ def indexing_pipeline(args):
     with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
+        cmd = ['snakemake', 
+               f'--snakefile {__pipeline__}',
+               f'--local-cores {args.cores}',
+               f'--configfile {temp_config.name}',
+               '--use-conda',
+               f'--directory {args.workdir}',
+               '--rerun-triggers mtime']
+        if args.slurm:
+            command.append('--executor slurm')
+        returncode = run_command(command)
 
-        return_code = snakemake(__pipeline__,
-                                workdir=args.workdir,
-                                configfiles=[temp_config.name, ],
-                                use_conda=True,
-                                slurm=args.slurm,
-                                cores=args.jobs)
-        if not return_code:
-            logger.error("Pipeline execution failed")
+        if returncode != 0:
+            logging.error("-> Command \"{}\" returned non-zero exit status".format(cmd))
+            sys.exit(1)
         else:
-            logger.info("Pipeline finished")
+            logger.info("-> Pipeline finished")
 
 def query_pipeline(args):
     wf_config = {}
     wf_config["modus"] = {"query": True,
                           "indexing": False}
     wf_config["query"] = {
-        "index": args.index,
+        "index": args.index_manifest,
         "query_fasta": args.fasta ,
         "kmer_ratio": args.detection_ratio,
-        "method": args.method,
         "findere_z": args.findere
     }
     with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
-        return_code = snakemake(__pipeline__,
-                                workdir=args.workdir,
-                                configfiles=[temp_config.name, ],
-                                use_conda=True,
-                                slurm=args.slurm,
-                                cores=args.jobs)
-        if not return_code:
-            logger.error("Pipeline execution failed")
+        cmd = ['snakemake', 
+               f'--snakefile {__pipeline__}',
+               f'--local-cores {args.cores}',
+               f'--configfile {temp_config.name}',
+               '--use-conda',
+               f'--directory {args.workdir}',
+               '--rerun-triggers mtime']
+
+        if returncode != 0:
+            logging.error("-> Command \"{}\" returned non-zero exit status".format(cmd))
+            sys.exit(1)
         else:
-            logger.info("Pipeline finished")
+            logger.info("-> Pipeline finished")
 
 
 def add_index_parser_args(parser):
@@ -124,14 +140,8 @@ def add_index_parser_args(parser):
 
 def add_query_parser_args(parser):
     parser.add_argument(
-        "--method",
-        dest="method",
-        help="Indexing method. Must match to --index",
-        required=True
-    )
-    parser.add_argument(
-        "--index",
-        dest="index",
+        "--index-manifest",
+        dest="index_manifest",
         help="k-mer index to query",
         required=True,
     )
@@ -180,7 +190,7 @@ def tronmake_cli():
     parser.add_argument(
         "--slurm",
         dest="slurm",
-        help="Execute snakemake with slurm support",
+        help="Execute snakemake pipeline with slurm support",
         action="store_true"
     )
 

@@ -8,5 +8,8 @@ dependencies:
   - python
   - pip
   - pandas
-  - snakemake-minimal=7.34.2
+  - snakemake-minimal=8.16.0
   - make
+  - pip:
+    - snakemake-executor-plugin-slurm
+
