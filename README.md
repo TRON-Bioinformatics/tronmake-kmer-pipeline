@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 
-[![Release](https://img.shields.io/badge/release-v1.0.0-blue?style=flat)](https://gitlab.rlp.net/tron/kmer_pipeline)
+[![Release](https://img.shields.io/badge/release-v2.0.0-blue?style=flat)](https://gitlab.rlp.net/tron/kmer_pipeline)
 [![Snakemake](https://img.shields.io/badge/snakemake-8.16.0-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 
 <!-- badges: end -->
