@@ -4,6 +4,7 @@
 
 [![Release](https://img.shields.io/badge/release-v1.0.0-blue?style=flat)](https://gitlab.rlp.net/tron/kmer_pipeline)
 [![Snakemake](https://img.shields.io/badge/snakemake-7.32.4-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
+[![pipeline status](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/badges/develop/pipeline.svg)](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/commits/master)
 
 <!-- badges: end -->
 
