@@ -60,14 +60,44 @@ rule parse_raptor_subindex_search:
     input:
         search_results = rules.query_raptor.output.search_results
     output:
-        parsed_search_results = query/raptor/{subindex}/parsed_search.txt
+        parsed_search_results = query/raptor/{subindex}/parsed_search.tsv
     threads: 1
-    shell: ''
+    params:
+        kmer_ratio = config['query']['kmer_ratio'],
+        exe = workflow.source_path("../scripts/parse_kmer_search.py"),
+        index_mapping = lambda wildcards, input: index_struct[wildcards.subindex].get('index_mapping', '')
+    shell:
+        'python {params.exe} '
+        '--search-results {input.search_results} '
+        '--output {output.parsed_search_results} '
+        '--method raptor '
+        '--raptor-sample-mapping {params.index_mapping}'
 
 rule parse_kmindex_subindex_search:
     input:
         search_results = rules.kmindex_query.output.search_results
     output:
-        parsed_search_results = 'query/kmindex/{subindex}/search.txt'
+        parsed_search_results = 'query/kmindex/{subindex}/parsed_search.tsv',
+        kmer_ratio = config['query']['kmer_ratio'],
+        exe = workflow.source_path("../scripts/parse_kmer_search.py"),
     threads: 1
-    shell: ''
+    shell:
+        'python {params.exe} '
+        '--search-results {input.search_results} '
+        '--output {output.parsed_search_results} '
+        '--method kmindex '
+        '--kmindex-cutoff {prams.kmer_ratio}'
+
+rule gather_raptor_subindex_results:
+    input:
+        indices = get_subindices_raptor
+    output:
+        combined_indices = query/raptor/search.tsv
+    shell:
+        '''
+        cat {input.indices} > query/raptor/concat.tmp
+        sort -k1,1 < query/raptor/concat.tmp > {output.combined_indices}
+        rm query/raptor/concat.tmp
+        '''
+
+
