@@ -55,3 +55,19 @@ rule kmindex_query:
         '--format matrix '
         '--output {params.output_dir} &> {log}; '
         'mv {params.output_dir}/samples.tsv {output.search_results}'
+
+rule parse_raptor_subindex_search:
+    input:
+        search_results = rules.query_raptor.output.search_results
+    output:
+        parsed_search_results = query/raptor/{subindex}/parsed_search.txt
+    threads: 1
+    shell: ''
+
+rule parse_kmindex_subindex_search:
+    input:
+        search_results = rules.kmindex_query.output.search_results
+    output:
+        parsed_search_results = 'query/kmindex/{subindex}/search.txt'
+    threads: 1
+    shell: ''
