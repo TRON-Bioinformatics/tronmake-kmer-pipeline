@@ -43,11 +43,15 @@ def get_final_output(samples: pd.DataFrame, index_struct: dict):
     """
     final_output = []
     if config['modus']['query']:
+        index_methods = set()
         for index_id, index_properties in index_struct.items():
             method = index_properties.get('method', None)
             if method is None:
                 raise ValueError(f"k-mer method not specified for index: {index_id}")
-            final_output.append(f'query/{method}/{index_id}/search.txt')
+            index_methods.add(method)
+        final_output.extend(
+            expand('query/{method}/search.txt', method=index_methods)
+        )
     
     elif config['modus']['indexing']:
         method = config['indexing']['method']
@@ -142,6 +146,17 @@ def get_memory_raptor_build(wildcards):
     return estimated_memory
 
 def get_index(wildcards):
+    """
+    Retrieve path of k-mer subindex based on wildcard value of rule
+    """
     index_to_query = index_struct.get(wildcards.subindex)
     path = index_to_query.get('path', '')
     return path
+
+def get_subindex_results_kmindex(wildcards):
+    kmindex_indices = [name for name, attributes in index_struct.items() if attributes['method'] == 'kmindex']
+    return expand('query/kmindex/{subindex}/parsed_search.tsv', subindex = kmindex_indices)
+
+def get_subindex_results_raptor(wildcards):
+    raptor_indices = [name for name, attributes in index_struct.items() if attributes['method'] == 'raptor']
+    return expand('query/raptor/{subindex}/parsed_search.tsv', subindex=raptor_indices)

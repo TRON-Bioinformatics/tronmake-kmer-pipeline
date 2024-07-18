@@ -13,31 +13,31 @@ class IndexResultParser:
     if required.
     """
     def __init__(self,
-                 indexing_table: str,
-                 tool: str,
+                 search_results: str,
+                 method: str,
                  raptor_sample_mapping:str = None,
                  kmindex_cutoff: float = 0.7) -> None:
 
-        self.indexing_table = indexing_table
-        self.tool = tool
+        self.search_results = search_results
+        self.method = method
         # Parameters specific for prediction tools
         self.raptor_sample_mapping = raptor_sample_mapping
-        if self.tool == "raptor":
+        if self.method == "raptor":
             assert self.raptor_sample_mapping is not None and self.raptor_sample_mapping != "",\
                 "Parsing Raptor results requires a sample/index mapping file"
         self.kmindex_cutoff = kmindex_cutoff
 
     def parse_results(self) -> dict:
         result = {}
-        match self.tool:
+        match self.method:
             case "kmindex":
-                logger.info("Parsing KMINDEX index query results...")
+                logger.info("-> Parsing KMINDEX index query results...")
                 result = self._parse_kmindex()
             case "raptor":
-                logger.info("Parsing RAPTOR index query results...")
+                logger.info("-> Parsing RAPTOR index query results...")
                 result = self._parse_raptor()
             case _:
-                logger.error("Tool is unknown. Cannot parse results")
+                logger.error(f"Tool {self.method} is unknown. Cannot parse results")
         return result
 
     @staticmethod
@@ -56,8 +56,8 @@ class IndexResultParser:
 
     def _parse_kmindex(self) -> dict:
         results = {}
-        logger.info(f"Using {self.kmindex_cutoff} as cutoff to determine presence/absence of query sequences...")
-        with open(self.indexing_table) as file_handle:
+        logger.info(f"-> Using {self.kmindex_cutoff} as cutoff to determine presence/absence of query sequences...")
+        with open(self.search_results) as file_handle:
             reader = csv.DictReader(file_handle, delimiter='\t')
             for line in reader:
                 cts_id = line["samples"].split(":")[1]
@@ -72,7 +72,7 @@ class IndexResultParser:
                     else:
                         results[cts_id][sample] = {'detected': False, 'shared-kmer-fraction': prediction}
 
-        logger.info(f"Parsed {len(results)} query sequences")
+        logger.info(f"-> Parsed {len(results)} query sequences")
         return results
 
     def _parse_raptor(self) -> dict:
@@ -87,12 +87,12 @@ class IndexResultParser:
         results = {}
 
         with open(self.raptor_sample_mapping, 'r') as file_handle:
-            logger.info("Reading sample/minimiser mapping file to match raptor bin ids to sample_names")
+            logger.info("-> Reading minimiser2sample mapping file to match raptor bin ids to sample names")
             reader = csv.DictReader(file_handle, delimiter="\t")
             for row in reader:
                 sample_name_mapping[row['minimiser_id']] = row['sample_name']
 
-        with open(self.indexing_table) as file_handle:
+        with open(self.search_results) as file_handle:
             for line in file_handle:
                 elements = line.rstrip().split("\t")
                 # Skip config section returned in raptor output file -> Starts with '##'
@@ -125,7 +125,7 @@ class IndexResultParser:
                     for this_sample in not_detected_samples:
                         results[cts_id][sample_name_mapping[dataset_mapping[int(this_sample)]]] = {'detected': False, 'shared-kmer-fraction': None}
 
-        logger.info(f"Parsed {len(results)} query sequences")
+        logger.info(f"-> Parsed {len(results)} query sequences")
         return results
 
 def main():
@@ -170,8 +170,8 @@ def main():
     if float(args.kmindex_cutoff) > 1.0 or float(args.kmindex_cutoff < 0.0):
         raise ValueError("kmindex k-mer cutoff needs to be [0,1)")
 
-    parser = IndexResultParser(indexing_table=args.search_results,
-                               tool=args.method,
+    parser = IndexResultParser(earch_results=args.search_results,
+                               method=args.method,
                                raptor_sample_mapping=args.raptor_sample_mapping,
                                kmindex_cutoff=args.kmindex_cutoff)
     parsed_results = parser.parse_results()

@@ -57,10 +57,13 @@ rule kmindex_query:
         'mv {params.output_dir}/samples.tsv {output.search_results}'
 
 rule parse_raptor_subindex_search:
+    """
+    Parse Raptor search results into tabular format
+    """
     input:
         search_results = rules.query_raptor.output.search_results
     output:
-        parsed_search_results = query/raptor/{subindex}/parsed_search.tsv
+        parsed_search_results = 'query/raptor/{subindex}/parsed_search.tsv'
     threads: 1
     params:
         kmer_ratio = config['query']['kmer_ratio'],
@@ -74,10 +77,15 @@ rule parse_raptor_subindex_search:
         '--raptor-sample-mapping {params.index_mapping}'
 
 rule parse_kmindex_subindex_search:
+    """
+    Parse Kmindex search results into tabular format
+    """
     input:
         search_results = rules.kmindex_query.output.search_results
     output:
         parsed_search_results = 'query/kmindex/{subindex}/parsed_search.tsv',
+    threads: 1
+    params:    
         kmer_ratio = config['query']['kmer_ratio'],
         exe = workflow.source_path("../scripts/parse_kmer_search.py"),
     threads: 1
@@ -89,15 +97,36 @@ rule parse_kmindex_subindex_search:
         '--kmindex-cutoff {prams.kmer_ratio}'
 
 rule gather_raptor_subindex_results:
+    """
+    Combine raptor search results of sub-indices into unified table
+    """
     input:
-        indices = get_subindices_raptor
+        indices = get_subindex_results_raptor
     output:
-        combined_indices = query/raptor/search.tsv
+        combined_indices = 'query/raptor/search.tsv'
+    params:
+        run_dir = lambda wildcards, output: os.path.dirname(output.combined_indices)
     shell:
         '''
-        cat {input.indices} > query/raptor/concat.tmp
-        sort -k1,1 < query/raptor/concat.tmp > {output.combined_indices}
-        rm query/raptor/concat.tmp
+        cat {input.indices} > {params.run_dir}/concat.tmp
+        sort -k1,1 < {params.run_dir}/concat.tmp > {output.combined_indices}
+        rm {params.run_dir}/concat.tmp
         '''
 
+rule gather_kmindex_subindex_results:
+    """
+    Combine kmindex search results of sub-indices into unified table
+    """
+    input:
+        indices = get_subindex_results_kmindex
+    output:
+        combined_indices = 'query/kmindex/search.tsv'
+    params:
+        run_dir = lambda wildcards, output: os.path.dirname(output.combined_indices)
+    shell:
+        '''
+        cat {input.indices} > {params.run_dir}/concat.tmp
+        sort -k1,1 < {params.run_dir}/concat.tmp > {output.combined_indices}
+        rm {params.run_dir}/concat.tmp
+        '''
 
