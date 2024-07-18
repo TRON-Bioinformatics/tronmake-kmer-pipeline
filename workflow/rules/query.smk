@@ -69,6 +69,8 @@ rule parse_raptor_subindex_search:
         kmer_ratio = config['query']['kmer_ratio'],
         exe = workflow.source_path("../scripts/parse_kmer_search.py"),
         index_mapping = lambda wildcards, input: index_struct[wildcards.subindex].get('index_mapping', '')
+    conda:
+        '../envs/python3.yaml'
     shell:
         'python {params.exe} '
         '--search-results {input.search_results} '
@@ -89,6 +91,8 @@ rule parse_kmindex_subindex_search:
         kmer_ratio = config['query']['kmer_ratio'],
         exe = workflow.source_path("../scripts/parse_kmer_search.py"),
     threads: 1
+    conda:
+        '../envs/python3.yaml'
     shell:
         'python {params.exe} '
         '--search-results {input.search_results} '
