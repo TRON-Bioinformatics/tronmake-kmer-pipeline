@@ -50,7 +50,7 @@ def get_final_output(samples: pd.DataFrame, index_struct: dict):
                 raise ValueError(f"k-mer method not specified for index: {index_id}")
             index_methods.add(method)
         final_output.extend(
-            expand('query/{method}/search.txt', method=index_methods)
+            expand('query/{method}/search.tsv.gz', method=index_methods)
         )
     
     elif config['modus']['indexing']:
@@ -155,8 +155,8 @@ def get_index(wildcards):
 
 def get_subindex_results_kmindex(wildcards):
     kmindex_indices = [name for name, attributes in index_struct.items() if attributes['method'] == 'kmindex']
-    return expand('query/kmindex/{subindex}/parsed_search.tsv', subindex = kmindex_indices)
+    return expand('query/kmindex/{subindex}/parsed_search.tsv.gz', subindex = kmindex_indices)
 
 def get_subindex_results_raptor(wildcards):
     raptor_indices = [name for name, attributes in index_struct.items() if attributes['method'] == 'raptor']
-    return expand('query/raptor/{subindex}/parsed_search.tsv', subindex=raptor_indices)
+    return expand('query/raptor/{subindex}/parsed_search.tsv.gz', subindex=raptor_indices)

@@ -3,7 +3,7 @@ import sys
 import csv
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from logzero import logger
-
+import pandas as pd
 epilog = "Copyright (c) 2024 TRON gGmbH (See LICENSE for licensing details)"
 
 class IndexResultParser:
@@ -41,18 +41,20 @@ class IndexResultParser:
         return result
 
     @staticmethod
-    def write_result(results: dict, out_file: str):
+    def write_result(results: pd.DataFrame, out_file: str, out_type: str = 'tsv'):
         """
         Write parsed results into tabular format to be processed by user
         :param results: A dictionary qith cts as key and sample hits as value
         :param out_file: Output file
         :return:
         """
-        with open(out_file, "w") as file_handle:
-            for query, samples in results.items():
-                for sample, annot in samples.items():
-                    line = f"{query}\t{sample}\t{annot['detected']}\t{annot['shared-kmer-fraction']}\n"
-                    file_handle.write(line)
+        assert out_type in ['tsv', 'parquet'], \
+            'Supported output types are parquet and tsv'
+        with open(out_file, "wb") as file_handle:
+            if out_type == "tsv":
+                results.to_csv(file_handle, sep='\t',compression='zstd')
+            else:
+                results.to_parquet(file_handle, compression='snappy')
 
     def _parse_kmindex(self) -> dict:
         results = {}
@@ -67,11 +69,8 @@ class IndexResultParser:
                     if sample == "samples":
                         continue
                     prediction = float(prediction)
-                    if prediction >= self.kmindex_cutoff:
-                        results[cts_id][sample] = {'detected': True, 'shared-kmer-fraction': prediction}
-                    else:
-                        results[cts_id][sample] = {'detected': False, 'shared-kmer-fraction': prediction}
-
+                    results[cts_id][sample] = prediction
+        results = pd.DataFrame.from_dict(results, orient='index', dtype='Sparse[float64]')
         logger.info(f"-> Parsed {len(results)} query sequences")
         return results
 
@@ -117,14 +116,14 @@ class IndexResultParser:
                         for this_sample in elements[1].split(","):
                             # Save detected bins and directly translate into sample identifier
                             detected_samples.add(int(this_sample))
-                            results[cts_id][sample_name_mapping[dataset_mapping[int(this_sample)]]] = {'detected': True, 'shared-kmer-fraction': None}
+                            results[cts_id][sample_name_mapping[dataset_mapping[int(this_sample)]]] = self.kmindex_cutoff
                             #results[cts_id].append(sample_name_mapping[dataset_mapping[int(this_sample)]])
                         # Update not detected samples by removing bins with at least >= k-mer fraction
                         not_detected_samples = not_detected_samples - detected_samples
                     # Write annotation status for samples without a hit
                     for this_sample in not_detected_samples:
-                        results[cts_id][sample_name_mapping[dataset_mapping[int(this_sample)]]] = {'detected': False, 'shared-kmer-fraction': None}
-
+                        results[cts_id][sample_name_mapping[dataset_mapping[int(this_sample)]]] = None
+        results = pd.DataFrame.from_dict(results, orient='index', dtype='Sparse[float64, nan]')
         logger.info(f"-> Parsed {len(results)} query sequences")
         return results
 
@@ -170,7 +169,7 @@ def main():
     if float(args.kmindex_cutoff) > 1.0 or float(args.kmindex_cutoff < 0.0):
         raise ValueError("kmindex k-mer cutoff needs to be [0,1)")
 
-    parser = IndexResultParser(earch_results=args.search_results,
+    parser = IndexResultParser(search_results=args.search_results,
                                method=args.method,
                                raptor_sample_mapping=args.raptor_sample_mapping,
                                kmindex_cutoff=args.kmindex_cutoff)

@@ -63,12 +63,12 @@ rule parse_raptor_subindex_search:
     input:
         search_results = rules.query_raptor.output.search_results
     output:
-        parsed_search_results = 'query/raptor/{subindex}/parsed_search.tsv'
+        parsed_search_results = 'query/raptor/{subindex}/parsed_search.tsv.gz'
     threads: 1
     params:
         kmer_ratio = config['query']['kmer_ratio'],
         exe = workflow.source_path("../scripts/parse_kmer_search.py"),
-        index_mapping = lambda wildcards, input: index_struct[wildcards.subindex].get('index_mapping', '')
+        index_mapping = lambda wildcards, input: index_struct[wildcards.subindex].get('sample_mapping', '')
     conda:
         '../envs/python3.yaml'
     shell:
@@ -107,15 +107,14 @@ rule gather_raptor_subindex_results:
     input:
         indices = get_subindex_results_raptor
     output:
-        combined_indices = 'query/raptor/search.tsv'
+        combined_indices = 'query/raptor/search.tsv.gz',
+        combined_indices_bin = 'query/raptor/search.parquet'
     params:
-        run_dir = lambda wildcards, output: os.path.dirname(output.combined_indices)
-    shell:
-        '''
-        cat {input.indices} > {params.run_dir}/concat.tmp
-        sort -k1,1 < {params.run_dir}/concat.tmp > {output.combined_indices}
-        rm {params.run_dir}/concat.tmp
-        '''
+        run_dir = lambda wildcards, output: os.path.dirname(output.combined_indices_bin)
+    conda:
+        '../envs/python3.yaml'
+    script:
+        '../scripts/combined_kmer_search.py'
 
 rule gather_kmindex_subindex_results:
     """
@@ -124,13 +123,21 @@ rule gather_kmindex_subindex_results:
     input:
         indices = get_subindex_results_kmindex
     output:
-        combined_indices = 'query/kmindex/search.tsv'
+        combined_indices = 'query/kmindex/search.tsv.gz',
+        combined_indices_bin = 'query/kmindex/search.parquet'
     params:
-        run_dir = lambda wildcards, output: os.path.dirname(output.combined_indices)
-    shell:
-        '''
-        cat {input.indices} > {params.run_dir}/concat.tmp
-        sort -k1,1 < {params.run_dir}/concat.tmp > {output.combined_indices}
-        rm {params.run_dir}/concat.tmp
-        '''
+        run_dir = lambda wildcards, output: os.path.dirname(output.combined_indices_bin)
+    conda:
+        '../envs/python3.yaml'
+    script:
+        '../scripts/combined_kmer_search.py'
 
+#compress_combined_results:
+#    input:
+#        combined_indices = 'query/raptor/search.tsv',
+#    output:
+#        combined_indices = 'query/raptor/search.tsv.zst'
+#    shell:
+#        '''
+#        zstd {input.combined_indices}
+#        '''

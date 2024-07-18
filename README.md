@@ -45,7 +45,7 @@ Download the project and run as follows. Modify the [config file](config/config.
 and execute the workflow. Moreover you need to provide an index manifest file in **query** mode describing the
 indices to query. Have a look at the [example manifest](tests/configs/raptor_index.yaml)
 
-We also provide a python wrapper to execute the workflow and configure the pipeline based on the arguments passed.
+We also provide a python wrapper (python >= 3.10 supported) to execute the workflow and configure the pipeline based on the arguments passed.
 
 ### Wrapper execution (recommended)
 
@@ -85,7 +85,7 @@ python tronmake-kmer.py \
 
 
 
-### Traditional execution
+### Execution with snakemake
 
 ```bash
 
@@ -127,6 +127,28 @@ kmindex_test_index:
 ```
 
 With this manifest the query sequences would be searched in the k-mer indices of Raptor and kmindex.
+
+
+### Output
+
+#### Index mode
+
+The output is contained in the `index` directory inside the folder specified with the option `--directory`.
+The resulting indices files are separated by method. A sample directory for a given index contains the directories:
+
+
+#### Query mode
+
+The output is contained in the `query` directory inside the folder specified with the option `--directory`.
+The resulting search files are separated by sub-indices defined in the k-mer manifest file. 
+A sample directory for a given index search contains the subdirectories of subindices and aggregated search results:
+
+* query/<method>/search.hdf5
+
+Aggregated search results are provided as compressed binary file. YOu can use R, python to read the detection matrix file.
+Alternatively you can use `h52tsv.py` to drop the results into a TSV file. However, we recommend you to do this only for
+queries with a low number of sequences.
+
 
 
 ## References
