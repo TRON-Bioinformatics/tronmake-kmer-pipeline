@@ -16,14 +16,14 @@ that query did not reach k-mer ratio during search.
 import os
 import sys
 import pandas as pd
+import pyarrow.parquet as pq
 
 def merge_sparse_dataframes(dataframes: list):
-    base_df = pd.read_csv(dataframes[0], sep="\t", index_col=0).astype('Sparse[float64, nan]')
+    base_df = pd.read_csv(dataframes[0], sep="\t", index_col=0).astype('float16[pyarrow]')#.astype('Sparse[float64, nan]')
     for this_frame in range(1, len(dataframes)):
-        tmp_df = pd.read_csv(dataframes[this_frame], sep="\t", index_col=0).astype('Sparse[float64, nan]')
+        tmp_df = pd.read_csv(dataframes[this_frame], sep="\t", index_col=0).astype('float16[pyarrow]')#.astype('Sparse[float64, nan]')
         base_df  = pd.concat([base_df, tmp_df], axis=1)
     return base_df
 
 merged_df = merge_sparse_dataframes(snakemake.input.indices)
-merged_df.to_csv(snakemake.output.combined_indices, sep='\t', index=True)
-#merged_df.to_hdf(snakemake.output.combined_indices_bin, index=True, key='merged_df')
+merged_df.to_parquet(snakemake.output.combined_indices_bin, index=True)

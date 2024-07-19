@@ -9,6 +9,7 @@ dependencies:
   - pandas
   - pyarrow
   - numpy<2.0.0
+  - pytables
   - pip:
     - logzero
     - zstandard

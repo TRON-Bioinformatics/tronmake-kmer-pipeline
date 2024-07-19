@@ -50,7 +50,7 @@ def get_final_output(samples: pd.DataFrame, index_struct: dict):
                 raise ValueError(f"k-mer method not specified for index: {index_id}")
             index_methods.add(method)
         final_output.extend(
-            expand('query/{method}/search.tsv.gz', method=index_methods)
+            expand('query/{method}/search.parquet', method=index_methods)
         )
     
     elif config['modus']['indexing']:

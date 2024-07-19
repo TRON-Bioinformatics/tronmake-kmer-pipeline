@@ -5,7 +5,7 @@ workflow raptor {
         title: "Raptor"
         summary: "Index large collections of RNA-seq data with Raptor using HIBF index"
         authors: "Johannes Hausmann"
-        version: "13"
+        version: "19"
     }
     input {
         Array[String] input_ids

@@ -1,4 +1,7 @@
 - name: raptor_query
+  tags:
+    - raptor
+    - query
   command: >
     snakemake -p --configfile tests/configs/query.yaml --config query='{method':' raptor, index':' tests/configs/raptor_index.yaml}'
   files:
@@ -7,3 +10,8 @@
       contains:
         - "## Percentage threshold = 0.7"
         - "1_1/1	50"
+    - path: "query/raptor/raptor_test_index/parsed_search.tsv.gz"
+      md5sum: "c7e3b1f5efc1628e6af9dcc5c60e1960"
+    - path: "query/raptor/search.parquet"
+      md5sum: "a566709de7b2756d09cb0ea1099338e7"
+

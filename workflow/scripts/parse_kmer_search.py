@@ -4,6 +4,7 @@ import csv
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 from logzero import logger
 import pandas as pd
+
 epilog = "Copyright (c) 2024 TRON gGmbH (See LICENSE for licensing details)"
 
 class IndexResultParser:
@@ -16,7 +17,7 @@ class IndexResultParser:
                  search_results: str,
                  method: str,
                  raptor_sample_mapping:str = None,
-                 kmindex_cutoff: float = 0.7) -> None:
+                 kmer_ratio: float = 0.7) -> None:
 
         self.search_results = search_results
         self.method = method
@@ -25,9 +26,12 @@ class IndexResultParser:
         if self.method == "raptor":
             assert self.raptor_sample_mapping is not None and self.raptor_sample_mapping != "",\
                 "Parsing Raptor results requires a sample/index mapping file"
-        self.kmindex_cutoff = kmindex_cutoff
+        self.kmer_ratio = kmer_ratio
 
-    def parse_results(self) -> dict:
+    def parse_results(self) -> pd.DataFrame:
+        """
+        Choose parsing method for specified method
+        """
         result = {}
         match self.method:
             case "kmindex":
@@ -41,7 +45,7 @@ class IndexResultParser:
         return result
 
     @staticmethod
-    def write_result(results: pd.DataFrame, out_file: str, out_type: str = 'tsv'):
+    def write_result(results: pd.DataFrame, out_file: str, out_type: str = 'tsv') -> None:
         """
         Write parsed results into tabular format to be processed by user
         :param results: A dictionary qith cts as key and sample hits as value
@@ -52,32 +56,32 @@ class IndexResultParser:
             'Supported output types are parquet and tsv'
         with open(out_file, "wb") as file_handle:
             if out_type == "tsv":
-                results.to_csv(file_handle, sep='\t',compression='zstd')
+                results.to_csv(file_handle, sep='\t')
             else:
-                results.to_parquet(file_handle, compression='snappy')
+                results.to_parquet(file_handle, compression='snappy', index=True)
 
-    def _parse_kmindex(self) -> dict:
+    def _parse_kmindex(self) -> pd.DataFrame:
+        """
+        Parse tabular output format of kmindex
+        """
         results = {}
-        logger.info(f"-> Using {self.kmindex_cutoff} as cutoff to determine presence/absence of query sequences...")
         with open(self.search_results) as file_handle:
             reader = csv.DictReader(file_handle, delimiter='\t')
             for line in reader:
                 cts_id = line["samples"].split(":")[1]
-                results[cts_id] = []
-                sample_count = 0
+                results[cts_id] = {}
                 for sample, prediction in line.items():
                     if sample == "samples":
                         continue
-                    prediction = float(prediction)
+                    prediction = round(float(prediction), 2)
                     results[cts_id][sample] = prediction
         results = pd.DataFrame.from_dict(results, orient='index', dtype='Sparse[float64]')
         logger.info(f"-> Parsed {len(results)} query sequences")
         return results
 
-    def _parse_raptor(self) -> dict:
+    def _parse_raptor(self) -> pd.DataFrame:
         """
-        Parse raptor search results into dictionary with cts_ids as keys and samples
-        as values.
+        Parse raptor search results
 
         :return: Result mapping
         """
@@ -116,7 +120,7 @@ class IndexResultParser:
                         for this_sample in elements[1].split(","):
                             # Save detected bins and directly translate into sample identifier
                             detected_samples.add(int(this_sample))
-                            results[cts_id][sample_name_mapping[dataset_mapping[int(this_sample)]]] = self.kmindex_cutoff
+                            results[cts_id][sample_name_mapping[dataset_mapping[int(this_sample)]]] = self.kmer_ratio
                             #results[cts_id].append(sample_name_mapping[dataset_mapping[int(this_sample)]])
                         # Update not detected samples by removing bins with at least >= k-mer fraction
                         not_detected_samples = not_detected_samples - detected_samples
@@ -157,22 +161,23 @@ def main():
         help='Mapping of Raptor HIBF bins to real samples identifiers'
     )
     parser.add_argument(
-        '--kmindex-cutoff', dest='kmindex_cutoff',
+        '--kmer-ratio', dest='kmer_ratio',
         action='store',
         required=False,
         default=0.7,
-        help='Kmindex reports the fraction of shared k-mers between a sample in the index and the query. Use this cutoff determine the presence. If not specified all ratios are reported'
+        type=float,
+        help='K-mer ratio used for search'
     )
 
     args = parser.parse_args()
     logger.info(f'-> Parsing k-mer query file {args.search_results}')
-    if float(args.kmindex_cutoff) > 1.0 or float(args.kmindex_cutoff < 0.0):
-        raise ValueError("kmindex k-mer cutoff needs to be [0,1)")
+    if args.kmer_ratio > 1.0 or args.kmer_ratio < 0.0:
+        raise ValueError("k-mer ratio needs to be [0,1)")
 
     parser = IndexResultParser(search_results=args.search_results,
                                method=args.method,
                                raptor_sample_mapping=args.raptor_sample_mapping,
-                               kmindex_cutoff=args.kmindex_cutoff)
+                               kmer_ratio=args.kmer_ratio)
     parsed_results = parser.parse_results()
     parser.write_result(parsed_results, args.output)
 
