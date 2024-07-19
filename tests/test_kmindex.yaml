@@ -1,4 +1,8 @@
-- name: kmindex_index_build
+- name: kmindex
+  tags:
+    - kmindex
+    - query
+    - build
   command: >
     bash -c "
     snakemake -p --configfile tests/configs/kmindex.yaml ; 
@@ -17,6 +21,10 @@
         - '"kmindex_version": "0.5.2"'
         - '"smer_size": 21'
         - '"nb_partitions": 4'
-    - path: "query/kmindex/kmindex_test_index/search.txt"
+    - path: "query/kmindex/kmindex_test_index/search.tsv"
       contains:
         - "samples:1_1/1	0.9989773178251977"
+    - path: "query/kmindex/kmindex_test_index/parsed_search.tsv.gz"
+      md5sum: "ba05e66756f6b638c9f65d0932e29f9a"
+    - path: "query/kmindex/search.parquet"
+      md5sum: "e77dd989f431dd21238053311244af67"

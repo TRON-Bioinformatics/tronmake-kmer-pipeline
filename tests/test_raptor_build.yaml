@@ -1,4 +1,7 @@
 - name: raptor_index_build
+  tags:
+    - raptor
+    - build
   command: snakemake -p --configfile tests/configs/raptor.yaml
   files:
     - path: "index/raptor/raptor.index"
