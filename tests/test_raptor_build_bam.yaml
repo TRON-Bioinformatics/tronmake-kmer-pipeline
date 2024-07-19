@@ -1,0 +1,14 @@
+- name: raptor_index_build_bam
+  tags:
+    - raptor
+    - build
+    - bam
+  command: snakemake -p --configfile tests/configs/raptor_bam.yaml
+  files:
+    - path: "index/raptor/raptor.index"
+      md5sum: a395df5b503bd15ebcf34f17a378fb9e
+    - path: "index/raptor/index_mapping.txt"
+      contains:
+         - "minimiser_id	sample_name"
+         - "index/raptor/minimiser/1/reads.minimiser	1"
+         - "index/raptor/minimiser/2/reads.minimiser	2"

@@ -94,7 +94,7 @@ def read_sample_sheet(file):
                 user_defined_type = elements[2].rstrip()
             except IndexError:
                 user_defined_type = "fastq"
-            file_type = "fastq" if ps.isnull(user_defined_type) else user_defined_type
+            file_type = "fastq" if pd.isnull(user_defined_type) else user_defined_type
             if not file_type in ['fastq', 'bam']:
                 print(f"Unsupported input type: {file_type}. Skipping entity: {bin_id} for index building.")
                 continue
@@ -119,7 +119,7 @@ def get_ntcard_fastq(wildcards):
     fastq = sample.get('fastq')
     file_type = sample.get('file_type').item()
     if file_type == 'bam':
-        return 'index/prepare_input/{wildcards.sample}/reads.fastq.gz'
+        return f'index/prepare_input/{wildcards.sample}/reads.fastq.gz'
     try: 
         fastq = fastq.item()
     except AttributeError as error:
@@ -133,7 +133,7 @@ def get_bam_input(wildcards):
     Return path to BAM file is file type specified
     """
     sample = samples.query('bin_id == @wildcards.sample')
-    file_type = sample.get('file_type')
+    file_type = sample.get('file_type').item()
     if file_type != 'bam':
         return ''
     bam = sample.get('fastq')
