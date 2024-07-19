@@ -20,6 +20,8 @@ rule cuttlefish:
         cutoff = int(config['indexing']['cutoff'])
     conda:
         '../envs/cuttlefish.yaml'
+    container:
+        'docker://quay.io/biocontainers/cuttlefish:2.2.0--h6a68c12_2'
     log:
         'index/logs/{sample}_cuttlefish.log'
     shell:

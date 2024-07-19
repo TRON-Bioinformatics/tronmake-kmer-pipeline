@@ -21,6 +21,8 @@ rule raptor_prepare_per_sample:
     threads: 1
     conda:
         '../envs/raptor.yaml'
+    container:
+        'docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2'
     log: 'index/raptor/minimiser/{sample}/log'
     message: "Extracting {params.kmer_size},{params.window} minimisers from sample {wildcards.sample}"
     shell:
@@ -78,6 +80,8 @@ rule raptor_layout:
         fpr = float(config['indexing']['fpr'])
     conda:
         '../envs/raptor.yaml'
+    container:
+        'docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2'
     log: 'index/raptor/layout.log'
     threads: 1
     resources:
@@ -101,6 +105,8 @@ rule raptor_build:
         hibf_index = "index/raptor/raptor.index"
     conda:
         '../envs/raptor.yaml'
+    container:
+        'docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2'
     log: 'index/raptor/build.log'
     threads: 16
     resources:

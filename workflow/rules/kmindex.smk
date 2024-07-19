@@ -12,6 +12,8 @@ rule ntcard:
         prefix = lambda wildcards, output: output.histo.rstrip(".hist")
     conda:
         '../envs/kmindex.yaml'
+    container:
+        'docker://quay.io/biocontainers/ntcard:1.2.2--pl5321hdcf5f25_4'
     threads: 1
     shell:
         'ntcard '
@@ -115,6 +117,8 @@ rule kmtricks:
             if config['indexing']['quantitative_index'] else ''
     conda:
         '../envs/kmindex.yaml'
+    container:
+        'docker://tlemane/kmindex:0.5.2'
     shell:
         'test -d {output.kmtricks_index} && rmdir {output.kmtricks_index} ;'
         'bf_size=$(cat {input.bf_size}) && '
@@ -146,6 +150,8 @@ rule kmindex:
         index_name = config['indexing'].get('index_name', 'samples'),
     conda:
         '../envs/kmindex.yaml'
+    container:
+        'docker://tlemane/kmindex:0.5.2'
     threads: 1
     resources:
         mem_mb = 10000

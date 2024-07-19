@@ -17,10 +17,10 @@ epilog = "Copyright (c) 2023 TRON gGmbH (See LICENSE for licensing details)"
 
 def execute_cmd(cmd, working_dir = "."):
     """This function runs a command into a subprocess."""
-    logging.info("-> Executing CMD: {}".format(cmd))
+    logger.info("-> Executing CMD: {}".format(cmd))
     p = subprocess.run(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE, cwd = working_dir, shell=False)
     if p.returncode != 0:
-        logging.error(p.stderr)
+        logger.error(p.stderr)
     return p.returncode
 
 
@@ -47,11 +47,11 @@ def indexing_pipeline(args):
                f'--directory {args.workdir}',
                '--rerun-triggers mtime']
         if args.slurm:
-            command.append('--executor slurm')
-        returncode = run_command(command)
+            cmd.append('--executor slurm')
+        returncode = execute_cmd(cmd)
 
         if returncode != 0:
-            logging.error("-> Command \"{}\" returned non-zero exit status".format(cmd))
+            logger.error("-> Command \"{}\" returned non-zero exit status".format(cmd))
             sys.exit(1)
         else:
             logger.info("-> Pipeline finished")
@@ -76,13 +76,15 @@ def query_pipeline(args):
                '--use-conda',
                f'--directory {args.workdir}',
                '--rerun-triggers mtime']
+        if args.slurm:
+            cmd.append('--executor slurm')
+        returncode = execute_cmd(cmd)
 
         if returncode != 0:
-            logging.error("-> Command \"{}\" returned non-zero exit status".format(cmd))
+            logger.error("-> Command \"{}\" returned non-zero exit status".format(cmd))
             sys.exit(1)
         else:
             logger.info("-> Pipeline finished")
-
 
 def add_index_parser_args(parser):
     parser.add_argument(
@@ -133,7 +135,7 @@ def add_index_parser_args(parser):
         "--jobs",
         dest="jobs",
         help="Number of local CPUs or number of jobs for slurm submission",
-        default=50
+        default=16
     )
     parser.set_defaults(func=indexing_pipeline)
 
@@ -171,7 +173,7 @@ def add_query_parser_args(parser):
         help="Work directory for pipeline execution",
         default=pathlib.Path(__file__).parent
     )
-        parser.add_argument(
+    parser.add_argument(
         "--jobs",
         dest="jobs",
         help="Number of local CPUs or number of jobs for slurm submission",

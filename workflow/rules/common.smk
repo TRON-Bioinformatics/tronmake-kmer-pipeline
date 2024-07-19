@@ -89,7 +89,17 @@ def read_sample_sheet(file):
             elements = line.rstrip().split('\t')
             bin_id = elements[0].rstrip()
             fastq = elements[1].rstrip()
-            file_content.append({'bin_id': bin_id, 'fastq': fastq})
+            user_defined_type = None
+            try:
+                user_defined_type = elements[2].rstrip()
+            except IndexError:
+                user_defined_type = "fastq"
+            file_type = "fastq" if ps.isnull(user_defined_type) else user_defined_type
+            if not file_type in ['fastq', 'bam']:
+                print(f"Unsupported input type: {file_type}. Skipping entity: {bin_id} for index building.")
+                continue
+            file_content.append({'bin_id': bin_id, 'fastq': fastq, 'file_type': file_type})
+
     samples = pd.DataFrame(file_content)
     return samples
 
@@ -107,6 +117,9 @@ def read_index_struct(file):
 def get_ntcard_fastq(wildcards):
     sample = samples.query('bin_id == @wildcards.sample')
     fastq = sample.get('fastq')
+    file_type = sample.get('file_type').item()
+    if file_type == 'bam':
+        return 'index/prepare_input/{wildcards.sample}/reads.fastq.gz'
     try: 
         fastq = fastq.item()
     except AttributeError as error:
@@ -114,6 +127,22 @@ def get_ntcard_fastq(wildcards):
     # Our sample sheet format allows the following delimiters ","
     fastq = fastq.split(',')
     return fastq
+
+def get_bam_input(wildcards):
+    """
+    Return path to BAM file is file type specified
+    """
+    sample = samples.query('bin_id == @wildcards.sample')
+    file_type = sample.get('file_type')
+    if file_type != 'bam':
+        return ''
+    bam = sample.get('fastq')
+    try:
+        bam = bam.item()
+    except AttributeError as error:
+        return ''
+    bam = bam.split(',')
+    return bam
 
 def get_number_of_bin(samples):
     """

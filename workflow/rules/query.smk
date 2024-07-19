@@ -17,6 +17,8 @@ rule query_raptor:
         mem_mb = lambda wildcards, input: get_memory_raptor(wildcards, input)
     conda:
         '../envs/raptor.yaml'
+    container:
+        'docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2'
     log: 'query/raptor/{subindex}/search.log'
     shell:
         'raptor '
@@ -42,6 +44,8 @@ rule kmindex_query:
     threads: 16
     conda:
         '../envs/kmindex.yaml'
+    container:
+        'docker://tlemane/kmindex:0.5.2'
     log: 'query/kmindex/{subindex}/search.log'
     shell:
         'kmindex '
