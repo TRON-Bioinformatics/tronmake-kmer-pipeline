@@ -1,5 +1,7 @@
+name: raptor
 channels:
   - conda-forge
   - bioconda
+  - nodefaults
 dependencies:
   - raptor=3.0.1
