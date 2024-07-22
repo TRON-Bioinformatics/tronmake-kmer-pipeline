@@ -46,6 +46,7 @@ rule gather_raptor_minimisers:
     output:
         minimiser_list= 'index/raptor/minimiser/minimiser.list'
     threads: 1
+    container: 'docker://busybox:1.36.1-musl'
     shell:
         '''
         cat {input.minimisers} > {output.minimiser_list}
@@ -58,28 +59,11 @@ rule raptor_sample_mapping:
     output:
         index_mapping = "index/raptor/index_mapping.txt"
     threads: 1
+    container: 'docker://busybox:1.36.1-musl'
     shell:
         '''
         {{ printf "minimiser_id\tsample_name\n" ; cat {input.idx_map} ; }} > {output.index_mapping}
         '''
-#rule raptor_sample_mapping:
-#    """
-#    Create a sample/bin to minimiser mapping for annotation. Raptor
-#    uses the path of the first minimiser file in a bin as identifier in
-#    the output. With this mapping these paths can be mapped back to the sample
-#    ids used in the input sample sheet.
-#    """
-#    output:
-#        index_mapping = "index/raptor/index_mapping.txt"
-#    message: "Generating index-bin to sample mapping"
-#    run:
-#        with open(output.index_mapping, 'w') as mapping_handle :
-#            mapping_handle.write("minimiser_id\tsample_name\n")
-#            for line in samples.itertuples(index=False):
-#                # Write index mapping: sample_name: minimider_id
-#                # Raptor uses the basename of the first fastq file as bin identifier
-#                minimiser_id = os.path.basename(line.fastq.split(",")[0]).rstrip(".fastq.gz").rstrip("bam")
-#                mapping_handle.write(f'{minimiser_id}\t{line.bin_id}\n')
 
 rule raptor_layout:
     """

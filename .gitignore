@@ -2,6 +2,7 @@
 .snakemake
 query/
 index
+kmer
 **/__pycache__
 
 

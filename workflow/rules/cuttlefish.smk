@@ -41,6 +41,7 @@ rule compress_cDBG:
     output:
         compress_dbg = 'index/cuttlefish/{sample}/{sample}_cdbg.fa.gz'
     threads: 1
+    container: 'docker://busybox:1.36.1-musl'
     shell:
         '''
         gzip {input.dbg}

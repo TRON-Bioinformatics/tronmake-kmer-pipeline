@@ -114,12 +114,12 @@ def read_index_struct(file):
         sys.exit(1)
     return index_struct
 
-def get_ntcard_fastq(wildcards):
+def get_ntcard_fastq(wildcards) -> list:
     sample = samples.query('bin_id == @wildcards.sample')
     fastq = sample.get('fastq')
     file_type = sample.get('file_type').item()
     if file_type == 'bam':
-        return f'index/prepare_input/{wildcards.sample}/reads.fastq.gz'
+        return [f'index/prepare_input/{wildcards.sample}/reads.fastq.gz',]
     try: 
         fastq = fastq.item()
     except AttributeError as error:

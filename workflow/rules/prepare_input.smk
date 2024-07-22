@@ -5,7 +5,7 @@ rule bam2fastq:
     input:
         bam = get_bam_input
     output:
-        reads = temp("index/prepare_input/{sample}/reads.fastq.gz")
+        reads = "index/prepare_input/{sample}/reads.fastq.gz"
     threads: 6
     conda:
         '../envs/samtools.yaml'

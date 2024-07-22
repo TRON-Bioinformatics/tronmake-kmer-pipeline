@@ -3,7 +3,7 @@
     - raptor
     - build
     - bam
-  command: snakemake -p --configfile tests/configs/raptor_bam.yaml
+  command: snakemake -p --configfile tests/configs/raptor.yaml --config indexing='{samples':' tests/samples_bam.tsv}'
   files:
     - path: "index/raptor/raptor.index"
       md5sum: a395df5b503bd15ebcf34f17a378fb9e
