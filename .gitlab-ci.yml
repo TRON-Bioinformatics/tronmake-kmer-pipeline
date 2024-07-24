@@ -3,6 +3,7 @@ stages:
   - test
 
 changelog_check:
+  image: python:3.10.4-buster
   stage: prechecks
   script:
     - git fetch
