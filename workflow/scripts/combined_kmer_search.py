@@ -25,5 +25,10 @@ def merge_sparse_dataframes(dataframes: list):
         base_df  = pd.concat([base_df, tmp_df], axis=1)
     return base_df
 
-merged_df = merge_sparse_dataframes(snakemake.input.indices)
+
+if len(snakemake.input.indices) > 1:
+    merged_df = merge_sparse_dataframes(snakemake.input.indices)
+else:
+    merged_df = pd.read_csv(snakemake.input.indices[0], sep="\t", index_col=0).astype('float16[pyarrow]')
+
 merged_df.to_parquet(snakemake.output.combined_indices_bin, index=True)

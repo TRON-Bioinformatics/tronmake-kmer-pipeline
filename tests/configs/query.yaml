@@ -2,7 +2,6 @@ modus:
   query: True
   indexing: False
 
-
 query:
   query_fasta: examples/query.fasta
   kmer_ratio: 0.7

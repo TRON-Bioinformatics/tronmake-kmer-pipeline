@@ -7,7 +7,8 @@ rule raptor_prepare_per_sample:
     input:
         bin_fastq = get_ntcard_fastq
     output:
-        bin_minimiser = 'index/raptor/minimiser/{sample}/minimiser.list'
+        bin_minimiser = 'index/raptor/minimiser/{sample}/minimiser.list',
+        idx_map = 'index/raptor/minimiser/{sample}/index_map.txt'
     params:
         sample_sheet = 
             lambda wildcards, output: 
@@ -21,6 +22,8 @@ rule raptor_prepare_per_sample:
     threads: 1
     conda:
         '../envs/raptor.yaml'
+    container:
+        'docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2'
     log: 'index/raptor/minimiser/{sample}/log'
     message: "Extracting {params.kmer_size},{params.window} minimisers from sample {wildcards.sample}"
     shell:
@@ -30,6 +33,7 @@ rule raptor_prepare_per_sample:
         --window {params.window} --kmer-count-cutoff {params.cut_off} \\
         --input {params.sample_sheet} \\
         --output {params.output_dir} &> {log}
+        paste {params.output_dir}/minimiser.list <(echo {wildcards.sample}) > {params.output_dir}/index_map.txt
         '''
 
 rule gather_raptor_minimisers:
@@ -42,29 +46,24 @@ rule gather_raptor_minimisers:
     output:
         minimiser_list= 'index/raptor/minimiser/minimiser.list'
     threads: 1
+    container: 'docker://busybox:1.36.1-musl'
     shell:
         '''
         cat {input.minimisers} > {output.minimiser_list}
         '''
 
 rule raptor_sample_mapping:
-    """
-    Create a sample/bin to minimiser mapping for annotation. Raptor
-    uses the path of the first minimiser file in a bin as identifier in
-    the output. With this mapping these paths can be mapped back to the sample
-    ids used in the input sample sheet.
-    """
+    input:
+        idx_map = expand('index/raptor/minimiser/{sample}/index_map.txt',
+            sample=samples.bin_id.unique().tolist())
     output:
         index_mapping = "index/raptor/index_mapping.txt"
-    message: "Generating index-bin to sample mapping"
-    run:
-        with open(output.index_mapping, 'w') as mapping_handle :
-            mapping_handle.write("sample_name\tminimiser_id\n")
-            for line in samples.itertuples(index=False):
-                # Write index mapping: sample_name: minimider_id
-                # Raptor uses the basename of the first fastq file as bin identifier
-                minimiser_id = os.path.basename(line.fastq.split(",")[0]).rstrip(".fastq.gz")
-                mapping_handle.write(f'{line.bin_id}\t{minimiser_id}\n')
+    threads: 1
+    container: 'docker://busybox:1.36.1-musl'
+    shell:
+        '''
+        {{ printf "minimiser_id\tsample_name\n" ; cat {input.idx_map} ; }} > {output.index_mapping}
+        '''
 
 rule raptor_layout:
     """
@@ -78,6 +77,8 @@ rule raptor_layout:
         fpr = float(config['indexing']['fpr'])
     conda:
         '../envs/raptor.yaml'
+    container:
+        'docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2'
     log: 'index/raptor/layout.log'
     threads: 1
     resources:
@@ -101,6 +102,8 @@ rule raptor_build:
         hibf_index = "index/raptor/raptor.index"
     conda:
         '../envs/raptor.yaml'
+    container:
+        'docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2'
     log: 'index/raptor/build.log'
     threads: 16
     resources:
