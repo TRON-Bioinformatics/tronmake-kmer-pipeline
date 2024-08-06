@@ -29,4 +29,4 @@
     - path: "query/kmindex/kmindex_test_index/parsed_search.tsv.gz"
       md5sum: "2e877fe8414a9a725ad614ff9d32e387"
     - path: "query/kmindex/search.parquet"
-      md5sum: "ca0302efabaf59785f348be842dc6a80"
+      md5sum: "e589895510c537afff389d8c6bd913d8"

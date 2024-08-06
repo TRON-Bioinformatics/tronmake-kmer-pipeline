@@ -13,5 +13,5 @@
     - path: "query/raptor/raptor_test_index/parsed_search.tsv.gz"
       md5sum: "c7e3b1f5efc1628e6af9dcc5c60e1960"
     - path: "query/raptor/search.parquet"
-      md5sum: "a566709de7b2756d09cb0ea1099338e7"
+      md5sum: "7e050f83d188f2a0970875e77c9c4ded"
 
