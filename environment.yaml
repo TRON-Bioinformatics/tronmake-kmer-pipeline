@@ -8,6 +8,8 @@ dependencies:
   - conda-forge::pytest-workflow
   - conda-forge::mamba
   - pip
+  - make
+  - pandas
   - pip:
     - snakemake-storage-plugin-http
     - snakemake-executor-plugin-cluster-generic
