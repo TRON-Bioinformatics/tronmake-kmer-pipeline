@@ -1,5 +1,26 @@
 stages:
+  - prechecks
   - test
+
+changelog_check:
+  image: python:3.10.4-buster
+  stage: prechecks
+  script:
+    - git fetch
+    - FILES_CHANGED=$(git diff --name-only $CI_MERGE_REQUEST_DIFF_BASE_SHA...HEAD)
+    - |+
+      for i in $FILES_CHANGED
+      do
+        if [[ "$i" == "CHANGELOG.md" ]]
+        then
+          exit 0
+        fi
+      done
+      exit 1
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+
 
 test_pipeline:
   image: condaforge/mambaforge:23.3.1-0

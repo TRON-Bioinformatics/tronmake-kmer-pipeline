@@ -1,0 +1,4 @@
+kmindex_test_index:
+  samples: 1
+  path: 'index/kmindex/global_index'
+  method: kmindex

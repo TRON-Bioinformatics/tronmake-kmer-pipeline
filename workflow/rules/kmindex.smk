@@ -12,6 +12,8 @@ rule ntcard:
         prefix = lambda wildcards, output: output.histo.rstrip(".hist")
     conda:
         '../envs/kmindex.yaml'
+    container:
+        'docker://quay.io/biocontainers/ntcard:1.2.2--pl5321hdcf5f25_4'
     threads: 1
     shell:
         'ntcard '
@@ -55,6 +57,7 @@ rule gather_ntcard:
         kmer_all_sorted = 'index/ntcard/experiments.ntcard.sorted.txt'
     threads: 1
     message: "Sorting k-mer cardinalities in descending order"
+    container: 'docker://busybox:1.36.1-musl'
     shell:
         '''
         printf 'experiment\\tF0\\tf1\\tnum_kmers\\n' > {output.kmer_all}
@@ -84,17 +87,26 @@ rule estimate_bf_size:
         echo -n "$bf_size" > {output.bloom_filter_size}
         '''
 
+rule gather_fastq_kmtricks:
+    input:
+        fastq = get_ntcard_fastq
+    params:
+        formatted_input = lambda wildcards, input: f"{wildcards.sample} : {' ; '.join(input.fastq)}"
+    output:
+        temp('index/kmindex/tmp/{sample}.txt')
+    container: 'docker://busybox:1.36.1-musl'
+    shell:
+        'printf "{params.formatted_input}\n" > {output[0]}'
+
 rule write_kmtricks_fof:
-    """
-    Create input sheet for kmtricks using bin_id : fq1 ; fq2 ; ... ; fqn
-    """
+    input:
+        expand('index/kmindex/tmp/{sample}.txt',
+            sample=samples.bin_id.unique().tolist())
     output:
         fof = 'index/kmindex/samples.txt'
-    run:
-        with open(output.fof, 'w') as file_handle:
-            for sample in samples.itertuples():
-                fastq = sample.fastq.replace(",", ";")
-                file_handle.write(f'{sample.bin_id}:{fastq}\n')
+    container: 'docker://busybox:1.36.1-musl'
+    shell:
+        "cat {input} > {output.fof}"
 
 rule kmtricks:
     """
@@ -115,6 +127,9 @@ rule kmtricks:
             if config['indexing']['quantitative_index'] else ''
     conda:
         '../envs/kmindex.yaml'
+    container:
+        'docker://tlemane/kmindex:0.5.2'
+    log: 'index/kmindex/kmtricks_build.log'
     shell:
         'test -d {output.kmtricks_index} && rmdir {output.kmtricks_index} ;'
         'bf_size=$(cat {input.bf_size}) && '
@@ -132,7 +147,7 @@ rule kmtricks:
         '--minimizer-size 10 '
         '--nb-partitions 0 '
         '--cpr '
-        '{params.abundance_classes}'
+        '{params.abundance_classes} 2>&1 | tee {log}'
 
 rule kmindex:
     """
@@ -146,12 +161,14 @@ rule kmindex:
         index_name = config['indexing'].get('index_name', 'samples'),
     conda:
         '../envs/kmindex.yaml'
+    container:
+        'docker://tlemane/kmindex:0.5.2'
     threads: 1
     resources:
         mem_mb = 10000
+    log: 'index/kmindex/kmindex_register.log'
     shell:
         '''
-        # Delete automatically generated output dir
-        kmindex register -i {output.kmindex_index} -n {params.index_name} -p {input.kmtricks_index}
+        kmindex register -i {output.kmindex_index} -n {params.index_name} -p {input.kmtricks_index} 2>&1 | tee {log}
         '''
 

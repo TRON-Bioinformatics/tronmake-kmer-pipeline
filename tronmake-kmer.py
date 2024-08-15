@@ -6,14 +6,23 @@ import argparse
 import pathlib
 import tempfile
 import yaml
-from snakemake import snakemake
+import subprocess
 from logzero import logger
 
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 __pipeline__ = pathlib.Path(__file__).parent / 'workflow' / 'Snakefile'
 
 epilog = "Copyright (c) 2023 TRON gGmbH (See LICENSE for licensing details)"
+
+def execute_cmd(cmd, working_dir = "."):
+    """This function runs a command into a subprocess."""
+    logger.info("-> Executing CMD: {}".format(" ".join(cmd)))
+    p = subprocess.run(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE, cwd = working_dir, shell=False)
+    if p.returncode != 0:
+        logger.error(p.stderr)
+    return p.returncode
+
 
 def indexing_pipeline(args):
     wf_config = {}
@@ -30,43 +39,54 @@ def indexing_pipeline(args):
     with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
+        cmd = ['snakemake',
+               '--snakefile', str(__pipeline__),
+               '--local-cores', str(args.jobs),
+               '--jobs', str(args.jobs),
+               '--configfile', str(temp_config.name),
+               '--use-conda',
+               '--directory', str(args.workdir),
+               '--rerun-triggers', 'mtime']
+        if args.slurm:
+            cmd.extend(['--executor', 'slurm'])
+        returncode = execute_cmd(cmd)
 
-        return_code = snakemake(__pipeline__,
-                                workdir=args.workdir,
-                                configfiles=[temp_config.name, ],
-                                use_conda=True,
-                                slurm=args.slurm,
-                                cores=args.jobs)
-        if not return_code:
-            logger.error("Pipeline execution failed")
+        if returncode != 0:
+            logger.error("-> Command \"{}\" returned non-zero exit status".format(cmd))
+            sys.exit(1)
         else:
-            logger.info("Pipeline finished")
+            logger.info("-> Pipeline finished")
 
 def query_pipeline(args):
     wf_config = {}
     wf_config["modus"] = {"query": True,
                           "indexing": False}
     wf_config["query"] = {
-        "index": args.index,
+        "index": args.index_manifest,
         "query_fasta": args.fasta ,
         "kmer_ratio": args.detection_ratio,
-        "method": args.method,
         "findere_z": args.findere
     }
     with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
-        return_code = snakemake(__pipeline__,
-                                workdir=args.workdir,
-                                configfiles=[temp_config.name, ],
-                                use_conda=True,
-                                slurm=args.slurm,
-                                cores=args.jobs)
-        if not return_code:
-            logger.error("Pipeline execution failed")
-        else:
-            logger.info("Pipeline finished")
+        cmd = ['snakemake',
+               '--snakefile', str(__pipeline__),
+               '--local-cores', str(args.jobs),
+               '--jobs', str(args.jobs),
+               '--configfile', str(temp_config.name),
+               '--use-conda',
+               '--directory', str(args.workdir),
+               '--rerun-triggers', 'mtime']
+        if args.slurm:
+            cmd.extend(['--executor', 'slurm'])
+        returncode = execute_cmd(cmd)
 
+        if returncode != 0:
+            logger.error("-> Command \"{}\" returned non-zero exit status".format(cmd))
+            sys.exit(1)
+        else:
+            logger.info("-> Pipeline finished")
 
 def add_index_parser_args(parser):
     parser.add_argument(
@@ -85,7 +105,7 @@ def add_index_parser_args(parser):
     parser.add_argument(
         "--cutoff",
         dest="cutoff",
-        help="Cutoof to define solid and weak k-mers. Only solid k-mers are included in index",
+        help="Cutoff to define solid and weak k-mers. Only solid k-mers are included in index",
         default=2,
         type=int
     )
@@ -117,21 +137,15 @@ def add_index_parser_args(parser):
         "--jobs",
         dest="jobs",
         help="Number of local CPUs or number of jobs for slurm submission",
-        default=50
+        default=16
     )
     parser.set_defaults(func=indexing_pipeline)
 
 
 def add_query_parser_args(parser):
     parser.add_argument(
-        "--method",
-        dest="method",
-        help="Indexing method. Must match to --index",
-        required=True
-    )
-    parser.add_argument(
-        "--index",
-        dest="index",
+        "--index-manifest",
+        dest="index_manifest",
         help="k-mer index to query",
         required=True,
     )
@@ -161,7 +175,7 @@ def add_query_parser_args(parser):
         help="Work directory for pipeline execution",
         default=pathlib.Path(__file__).parent
     )
-        parser.add_argument(
+    parser.add_argument(
         "--jobs",
         dest="jobs",
         help="Number of local CPUs or number of jobs for slurm submission",
@@ -180,7 +194,7 @@ def tronmake_cli():
     parser.add_argument(
         "--slurm",
         dest="slurm",
-        help="Execute snakemake with slurm support",
+        help="Execute snakemake pipeline with slurm support",
         action="store_true"
     )
 

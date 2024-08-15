@@ -1,30 +1,32 @@
-- name: kmindex
+- name: kmindex_bam
   tags:
     - kmindex
     - query
     - build
   command: >
     bash -c "
-    snakemake -p --configfile tests/configs/kmindex.yaml ; 
+    snakemake -p --configfile tests/configs/kmindex.yaml --config indexing='{samples':' tests/samples_bam.tsv}'; 
     snakemake -p --cores 1 --configfile tests/configs/query.yaml --config query='{method':' kmindex, index':' tests/index_manifest/kmindex_index_manifest.yaml}'
     "
   files:
     - path: "index/kmindex/bloom_filter_size.txt"
       contains:
-        - "1757950"
+        - "526541"
     - path: "index/kmindex/samples.txt"
       contains:
-        - "1 : examples/example_data/64/reads/bin_00.fastq"
+        - "1 : index/prepare_input/1/reads.fastq.gz"
+        - "2 : index/prepare_input/2/reads.fastq.gz"
     - path: index/kmindex/global_index/index.json
       contains:
-        - '"bloom_size": 1757952'
+        - '"bloom_size": 526592'
         - '"kmindex_version": "0.5.2"'
         - '"smer_size": 21'
         - '"nb_partitions": 4'
     - path: "query/kmindex/kmindex_test_index/search.tsv"
       contains:
-        - "samples:1_1/1	0.9989773178251977"
+        - "samples:1_1/1	0.0007479317397808103	0.0007479317397808103"
+        - "samples:1_1/3	0.0007479317397808103	0.0007479317397808103"
     - path: "query/kmindex/kmindex_test_index/parsed_search.tsv.gz"
-      md5sum: "ba05e66756f6b638c9f65d0932e29f9a"
+      md5sum: "2e877fe8414a9a725ad614ff9d32e387"
     - path: "query/kmindex/search.parquet"
-      md5sum: "a4deb3d30da6a060d7bbdecf3855cffb"
+      md5sum: "e589895510c537afff389d8c6bd913d8"

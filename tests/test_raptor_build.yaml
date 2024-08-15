@@ -1,9 +1,13 @@
 - name: raptor_index_build
+  tags:
+    - raptor
+    - build
+    - fastq
   command: snakemake -p --configfile tests/configs/raptor.yaml
   files:
     - path: "index/raptor/raptor.index"
       md5sum: 671c4f6c1c6ab3dc93a74b8d6f2f545d
     - path: "index/raptor/index_mapping.txt"
       contains:
-         - "sample_name	minimiser_id"
-         - "1	bin_00"
+         - "minimiser_id	sample_name"
+         - "index/raptor/minimiser/1/bin_00.minimiser	1"
