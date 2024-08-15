@@ -17,7 +17,7 @@ epilog = "Copyright (c) 2023 TRON gGmbH (See LICENSE for licensing details)"
 
 def execute_cmd(cmd, working_dir = "."):
     """This function runs a command into a subprocess."""
-    logger.info("-> Executing CMD: {}".format(cmd))
+    logger.info("-> Executing CMD: {}".format(" ".join(cmd)))
     p = subprocess.run(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE, cwd = working_dir, shell=False)
     if p.returncode != 0:
         logger.error(p.stderr)
@@ -39,15 +39,16 @@ def indexing_pipeline(args):
     with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
-        cmd = ['snakemake', 
-               f'--snakefile {__pipeline__}',
-               f'--local-cores {args.cores}',
-               f'--configfile {temp_config.name}',
+        cmd = ['snakemake',
+               '--snakefile', str(__pipeline__),
+               '--local-cores', str(args.jobs),
+               '--jobs', str(args.jobs),
+               '--configfile', str(temp_config.name),
                '--use-conda',
-               f'--directory {args.workdir}',
-               '--rerun-triggers mtime']
+               '--directory', str(args.workdir),
+               '--rerun-triggers', 'mtime']
         if args.slurm:
-            cmd.append('--executor slurm')
+            cmd.extend(['--executor', 'slurm'])
         returncode = execute_cmd(cmd)
 
         if returncode != 0:
@@ -69,15 +70,16 @@ def query_pipeline(args):
     with tempfile.NamedTemporaryFile(mode="w", delete=False, dir=args.workdir) as temp_config:
         yaml.dump(wf_config, temp_config)
         temp_config.close()
-        cmd = ['snakemake', 
-               f'--snakefile {__pipeline__}',
-               f'--local-cores {args.cores}',
-               f'--configfile {temp_config.name}',
+        cmd = ['snakemake',
+               '--snakefile', str(__pipeline__),
+               '--local-cores', str(args.jobs),
+               '--jobs', str(args.jobs),
+               '--configfile', str(temp_config.name),
                '--use-conda',
-               f'--directory {args.workdir}',
-               '--rerun-triggers mtime']
+               '--directory', str(args.workdir),
+               '--rerun-triggers', 'mtime']
         if args.slurm:
-            cmd.append('--executor slurm')
+            cmd.extend(['--executor', 'slurm'])
         returncode = execute_cmd(cmd)
 
         if returncode != 0:
@@ -103,7 +105,7 @@ def add_index_parser_args(parser):
     parser.add_argument(
         "--cutoff",
         dest="cutoff",
-        help="Cutoof to define solid and weak k-mers. Only solid k-mers are included in index",
+        help="Cutoff to define solid and weak k-mers. Only solid k-mers are included in index",
         default=2,
         type=int
     )
