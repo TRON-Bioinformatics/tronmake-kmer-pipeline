@@ -2,7 +2,7 @@ import os
 import sys
 import csv
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
-from logzero import logger
+from loguru import logger
 import pandas as pd
 
 epilog = "Copyright (c) 2024 TRON gGmbH (See LICENSE for licensing details)"

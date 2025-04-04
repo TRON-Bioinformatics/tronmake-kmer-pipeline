@@ -3,5 +3,5 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - cuttlefish
+  - cuttlefish=2.2.0
   - gzip

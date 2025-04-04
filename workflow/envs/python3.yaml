@@ -11,5 +11,5 @@ dependencies:
   - numpy<2.0.0
   - pytables
   - pip:
-    - logzero
+    - loguru
     - zstandard

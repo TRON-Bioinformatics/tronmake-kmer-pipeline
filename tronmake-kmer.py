@@ -7,10 +7,10 @@ import pathlib
 import tempfile
 import yaml
 import subprocess
-from logzero import logger
+from loguru import logger
 
 
-__version__ = "2.0.0"
+__version__ = "2.0.1"
 __pipeline__ = pathlib.Path(__file__).parent / 'workflow' / 'Snakefile'
 
 epilog = "Copyright (c) 2023 TRON gGmbH (See LICENSE for licensing details)"
