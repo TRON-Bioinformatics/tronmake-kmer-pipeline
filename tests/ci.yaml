@@ -5,7 +5,7 @@ channels:
 dependencies:
   - gcc
   - conda
-  - python=3.12.4
+  - python=3.12.5
   - pip
   - pandas=2.2.2
   - snakemake-minimal=8.4.3
