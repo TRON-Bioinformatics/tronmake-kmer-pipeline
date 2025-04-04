@@ -23,7 +23,7 @@ changelog_check:
 
 
 test_pipeline:
-  image: condaforge/mambaforge:23.3.1-0
+  image: condaforge/miniforge3:24.11.3-2
   stage: test
   script:
     - mamba env create -f tests/ci.yaml

@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - bioconda
   - tlemane
+  - nodefaults
 dependencies:
   - kmindex=0.5.2
   - kmtricks

@@ -2,6 +2,7 @@ name: cuttlefish
 channels:
   - bioconda
   - conda-forge
+  - nodefaults
 dependencies:
-  - cuttlefish=2.2.0
-  - gzip
+  - bioconda::cuttlefish=2.2.0
+  - conda-forge::gzip
