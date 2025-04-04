@@ -25,6 +25,8 @@ changelog_check:
 test_pipeline:
   image: condaforge/miniforge3:24.11.3-2
   stage: test
+  before_script:
+    - apt update && apt --quiet --assume-yes install -y libxml2
   script:
     - mamba env create -f tests/ci.yaml
     - source /opt/conda/bin/activate Snakemake

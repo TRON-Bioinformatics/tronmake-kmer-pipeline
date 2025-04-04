@@ -1,12 +1,61 @@
 jobs: 100
 use-conda: true
-use-singularity: false
 local-cores: 8
-conda-frontend: mamba
-latency-wait: 60
+latency-wait: 120
 rerun-triggers: mtime
 default-resources:
   mem_mb: 4096
   threads: 2
   runtime: 3600
-  account: "'$USER'"
+
+set-threads:
+  raptor_prepare_per_sample: 1
+  gather_raptor_minimisers: 1
+  raptor_sample_mapping: 1
+  raptor_layout: 1
+  raptor_build: 16
+  query_raptor: 1
+  kmindex_query: 16
+  parse_raptor_subindex_search: 1
+  parse_kmindex_subindex_search: 1
+  gather_raptor_subindex_results: 1
+  gather_kmindex_subindex_results: 1
+
+  add_transcript_expression: 1
+  prepare_requant: 1
+  generate_context_fa: 1
+  bowtie_index: 4
+  bowtie_align: 8
+  requantify: 1
+  add_quant_counts: 1
+  find_cts_matching_wt: 8
+  insert_size: 1
+
+set-resources:
+  raptor_prepare_per_sample:
+    mem_mb: 16000 + ((attempt - 1) * 10000)
+    runtime: "4h"
+  gather_raptor_minimisers:
+    mem_mb: 500 + ((attempt - 1) * 250)
+    runtime: "10m"
+  raptor_sample_mapping:
+    mem_mb: 500 + ((attempt - 1) * 250)
+    runtime: "10m"
+  raptor_layout:
+    mem_mb: 500 + ((attempt - 1) * 250)
+    runtime: "1h"
+  kmindex_query:
+    mem_mb: 20000 + ((attempt - 1) * 10000)
+    runtime: "2h"
+  parse_raptor_subindex_search:
+    mem_mb: 2000 + ((attempt - 1) * 2000)
+    runtime: "20m"
+  parse_kmindex_subindex_search:
+    mem_mb: 2000 + ((attempt - 1) * 500)
+    runtime: "20m"
+  gather_raptor_subindex_results:
+    mem_mb: 20000 + ((attempt - 1) * 10000)
+    runtime: "1h"
+  gather_kmindex_subindex_results:
+    mem_mb: 20000 + ((attempt - 1) * 10000)
+    runtime: "1h"
