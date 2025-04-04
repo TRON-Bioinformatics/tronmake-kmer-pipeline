@@ -10,3 +10,5 @@ dependencies:
   - pandas=2.2.2
   - snakemake-minimal=8.4.3
   - make
+  - pyarrow
+  - numpy<2.0.0
