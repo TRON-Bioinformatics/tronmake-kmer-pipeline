@@ -37,10 +37,10 @@ set-resources:
     runtime: "4h"
   gather_raptor_minimisers:
     mem_mb: 500 + ((attempt - 1) * 250)
-    runtime: "10m"
+    runtime: "1h"
   raptor_sample_mapping:
     mem_mb: 500 + ((attempt - 1) * 250)
-    runtime: "10m"
+    runtime: "1h"
   raptor_layout:
     mem_mb: 500 + ((attempt - 1) * 250)
     runtime: "1h"
@@ -49,10 +49,10 @@ set-resources:
     runtime: "2h"
   parse_raptor_subindex_search:
     mem_mb: 2000 + ((attempt - 1) * 2000)
-    runtime: "20m"
+    runtime: "1h"
   parse_kmindex_subindex_search:
     mem_mb: 2000 + ((attempt - 1) * 500)
-    runtime: "20m"
+    runtime: "1h"
   gather_raptor_subindex_results:
     mem_mb: 20000 + ((attempt - 1) * 10000)
     runtime: "1h"
