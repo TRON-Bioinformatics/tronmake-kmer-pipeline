@@ -8,7 +8,7 @@ dependencies:
   - python=3.12.5
   - pip
   - pandas=2.2.2
-  - snakemake-minimal=8.4.3
+  - snakemake-minimal=9.1.6
   - make
   - pyarrow=17.0.0
   - fastparquet=2024.5.0
