@@ -6,8 +6,9 @@ channels:
 dependencies:
   - python=3.10.14
   - pip
-  - pandas
-  - pyarrow
+  - pandas=2.2.2
+  - pyarrow=17.0.0
+  - fastparquet=2024.5.0
   - numpy<2.0.0
   - pytables
   - pip:
