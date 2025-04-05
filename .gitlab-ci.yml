@@ -20,6 +20,17 @@ changelog_check:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
+test_linting:
+  image: condaforge/miniforge3:24.9.2-0
+  stage: prechecks
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - apt update && apt --quiet --assume-yes install -y libmagic1
+  script:
+    - mamba env create -n tronmake -f environment.yaml
+    - source /opt/conda/bin/activate tronmake
+    - snakemake --lint
 
 
 test_pipeline:
