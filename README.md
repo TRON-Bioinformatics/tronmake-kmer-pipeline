@@ -3,7 +3,7 @@
 <!-- badges: start -->
 
 [![Release](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/-/badges/release.svg)](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/-/releases)
-[![Snakemake](https://img.shields.io/badge/snakemake-8.16.0-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
+[![Snakemake](https://img.shields.io/badge/snakemake-9.1.6-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 [![pipeline status](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/badges/develop/pipeline.svg)](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/commits/main)
 
 
