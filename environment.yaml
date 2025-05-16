@@ -4,12 +4,14 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
-  - bioconda::snakemake=8.16
+  - bioconda::snakemake=9.1.6
   - conda-forge::pytest-workflow
   - conda-forge::mamba
+  - conda-forge::python=3.12.4
   - pip
   - make
   - pandas
+  - loguru
   - pip:
     - snakemake-storage-plugin-http
     - snakemake-executor-plugin-cluster-generic
