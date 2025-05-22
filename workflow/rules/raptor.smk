@@ -47,6 +47,7 @@ rule gather_raptor_minimisers:
         minimiser_list= 'index/raptor/minimiser/minimiser.list'
     threads: 1
     container: 'docker://busybox:1.36.1-musl'
+    log: 'index/raptor/minimiser/minimiser_gathering.log'
     shell:
         '''
         cat {input.minimisers} > {output.minimiser_list}
@@ -60,6 +61,7 @@ rule raptor_sample_mapping:
         index_mapping = "index/raptor/index_mapping.txt"
     threads: 1
     container: 'docker://busybox:1.36.1-musl'
+    log: 'index/raptor/index_mapping.log'
     shell:
         '''
         {{ printf "minimiser_id\tsample_name\n" ; cat {input.idx_map} ; }} > {output.index_mapping}

@@ -15,6 +15,7 @@ rule ntcard:
     container:
         'docker://quay.io/biocontainers/ntcard:1.2.2--pl5321hdcf5f25_4'
     threads: 1
+    log: 'index/ntcard/{sample}_ntcard.log'
     shell:
         'ntcard '
         '--kmer={params.kmer_size} '
@@ -31,6 +32,7 @@ rule parse_ntcard:
     output:
         parsed_histo = "index/ntcard/{sample}.ntcard"
     threads: 1
+    log: 'index/ntcard/{sample}_ntcard_parsing.log'
     message: 'Collecting k-mer cardinalities of all samples in indexing cohort'
     run:
         with open(input.histo, 'r') as file_handle, open(output.parsed_histo, 'w') as write_handle:
@@ -56,6 +58,7 @@ rule gather_ntcard:
         kmer_all = 'index/ntcard/experiments.ntcard.txt',
         kmer_all_sorted = 'index/ntcard/experiments.ntcard.sorted.txt'
     threads: 1
+    log: 'index/ntcard/gather_ntcard.log'
     message: "Sorting k-mer cardinalities in descending order"
     container: 'docker://busybox:1.36.1-musl'
     shell:
@@ -78,6 +81,7 @@ rule estimate_bf_size:
         bloom_filter_size = 'index/kmindex/bloom_filter_size.txt'
     message: "Estimating optimal Bloom filter size"
     threads: 1
+    log: 'index/kmindex/bf_size_estimation.log'
     conda:
         '../envs/python2.yaml'
     shell:
@@ -95,6 +99,7 @@ rule gather_fastq_kmtricks:
     output:
         temp('index/kmindex/tmp/{sample}.txt')
     container: 'docker://busybox:1.36.1-musl'
+    log: 'index/kmindex/gather_fastq_input.log'
     shell:
         'printf "{params.formatted_input}\n" > {output[0]}'
 
@@ -105,6 +110,7 @@ rule write_kmtricks_fof:
     output:
         fof = 'index/kmindex/samples.txt'
     container: 'docker://busybox:1.36.1-musl'
+    log: 'index/kmindex/create_fof.log'
     shell:
         "cat {input} > {output.fof}"
 
