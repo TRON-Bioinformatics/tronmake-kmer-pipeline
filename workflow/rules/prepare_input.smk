@@ -11,8 +11,10 @@ rule bam2fastq:
         '../envs/samtools.yaml'
     container:
         'docker://quay.io/biocontainers/samtools:1.20--h50ea8bc_0'
+    log: 'index/logs/bam2fastq/{sample}_bam2fastq.log'
     shell:
         """
+		exec 2> {log}
         # Check if multiple bam files are provided
         bam_files=({{{input.bam}}})
         no_bam_files=${{#bam_files[@]}}

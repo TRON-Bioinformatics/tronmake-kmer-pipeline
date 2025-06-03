@@ -9,7 +9,7 @@ rule cuttlefish:
         json = 'index/cuttlefish/{sample}/{sample}_cdbg.json'
     threads: 2
     resources:
-        mem_mb = 4000
+        mem_mb = 8000
     params:
         prefix = lambda wildcards, output:
             os.path.splitext(output.dbg)[0],
@@ -23,7 +23,7 @@ rule cuttlefish:
     container:
         'docker://quay.io/biocontainers/cuttlefish:2.2.0--h6a68c12_2'
     log:
-        'index/logs/{sample}_cuttlefish.log'
+        'index/logs/cuttlefish/{sample}_cuttlefish.log'
     shell:
         'cuttlefish '
         'build '
@@ -41,9 +41,14 @@ rule compress_cDBG:
     output:
         compress_dbg = 'index/cuttlefish/{sample}/{sample}_cdbg.fa.gz'
     threads: 1
+    resources:
+        mem_mb = 2000
     container: 'docker://busybox:1.36.1-musl'
+    log:
+        'index/logs/cuttlefish/{sample}_cuttlefish_compress.log'
     shell:
         '''
+		exec 2> {log}
         gzip {input.dbg}
         '''
         

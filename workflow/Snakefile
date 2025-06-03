@@ -2,18 +2,24 @@ import os
 import sys
 from snakemake.utils import validate
 
+
 configfile: workflow.source_path("../config/config.yaml")
+
+
 include: "rules/common.smk"
+
+
 validate(config, workflow.source_path("../config/validate_config.yaml"))
 validate_config(config)
 
 # Read sample sheet and return dummy dataframe if in query mode
-if config['modus']['indexing']:
-    samples = read_sample_sheet(config['indexing']['samples'])
+if config["modus"]["indexing"]:
+    samples = read_sample_sheet(config["indexing"]["samples"])
     index_struct = {}
 else:
-    samples = pd.DataFrame(columns=['bin_id', 'fastq', 'file_type'])
-    index_struct = read_index_struct(config['query']['index'])
+    samples = pd.DataFrame(columns=["bin_id", "fastq", "file_type"])
+    index_struct = read_index_struct(config["query"]["index"])
+
 
 # Import snakemake rules for query and index building
 include: "rules/query.smk"
@@ -23,7 +29,7 @@ include: "rules/cuttlefish.smk"
 include: "rules/prepare_input.smk"
 
 
-# Those rules are mainly cat, grep, etc. shell commands wihtout any computational footprint 
+# Those rules are mainly cat, grep, etc. shell commands wihtout any computational footprint
 localrules:
     gather_raptor_minimisers,
     raptor_sample_mapping,
@@ -32,10 +38,9 @@ localrules:
     gather_ntcard,
     estimate_bf_size,
     write_kmtricks_fof,
-    kmindex
+    kmindex,
+
 
 rule all:
     input:
-        get_final_output(samples, index_struct)
-
-
+        get_final_output(samples, index_struct),

@@ -7,25 +7,31 @@ import pandas as pd
 
 epilog = "Copyright (c) 2024 TRON gGmbH (See LICENSE for licensing details)"
 
+
 class IndexResultParser:
     """
     Class provides functions to parse table formats
     returned by kmer indexing tools and map to sample names
     if required.
     """
-    def __init__(self,
-                 search_results: str,
-                 method: str,
-                 raptor_sample_mapping:str = None,
-                 kmer_ratio: float = 0.7) -> None:
+
+    def __init__(
+        self,
+        search_results: str,
+        method: str,
+        raptor_sample_mapping: str = None,
+        kmer_ratio: float = 0.7,
+    ) -> None:
 
         self.search_results = search_results
         self.method = method
         # Parameters specific for prediction tools
         self.raptor_sample_mapping = raptor_sample_mapping
         if self.method == "raptor":
-            assert self.raptor_sample_mapping is not None and self.raptor_sample_mapping != "",\
-                "Parsing Raptor results requires a sample/index mapping file"
+            assert (
+                self.raptor_sample_mapping is not None
+                and self.raptor_sample_mapping != ""
+            ), "Parsing Raptor results requires a sample/index mapping file"
         self.kmer_ratio = kmer_ratio
 
     def parse_results(self) -> pd.DataFrame:
@@ -45,20 +51,24 @@ class IndexResultParser:
         return result
 
     @staticmethod
-    def write_result(results: pd.DataFrame, out_file: str, out_type: str = 'tsv') -> None:
+    def write_result(
+        results: pd.DataFrame, out_file: str, out_type: str = "tsv"
+    ) -> None:
         """
         Write parsed results into tabular format to be processed by user
         :param results: A dictionary qith cts as key and sample hits as value
         :param out_file: Output file
         :return:
         """
-        assert out_type in ['tsv', 'parquet'], \
-            'Supported output types are parquet and tsv'
+        assert out_type in [
+            "tsv",
+            "parquet",
+        ], "Supported output types are parquet and tsv"
         with open(out_file, "wb") as file_handle:
             if out_type == "tsv":
-                results.to_csv(file_handle, sep='\t')
+                results.to_csv(file_handle, sep="\t")
             else:
-                results.to_parquet(file_handle, compression='snappy', index=True)
+                results.to_parquet(file_handle, compression="snappy", index=True)
 
     def _parse_kmindex(self) -> pd.DataFrame:
         """
@@ -66,7 +76,7 @@ class IndexResultParser:
         """
         results = {}
         with open(self.search_results) as file_handle:
-            reader = csv.DictReader(file_handle, delimiter='\t')
+            reader = csv.DictReader(file_handle, delimiter="\t")
             for line in reader:
                 cts_id = line["samples"].split(":")[1]
                 results[cts_id] = {}
@@ -75,7 +85,9 @@ class IndexResultParser:
                         continue
                     prediction = round(float(prediction), 2)
                     results[cts_id][sample] = prediction
-        results = pd.DataFrame.from_dict(results, orient='index', dtype='Sparse[float64]')
+        results = pd.DataFrame.from_dict(
+            results, orient="index", dtype="Sparse[float64]"
+        )
         logger.info(f"-> Parsed {len(results)} query sequences")
         return results
 
@@ -89,11 +101,13 @@ class IndexResultParser:
         sample_name_mapping = {}
         results = {}
 
-        with open(self.raptor_sample_mapping, 'r') as file_handle:
-            logger.info("-> Reading minimiser2sample mapping file to match raptor bin ids to sample names")
+        with open(self.raptor_sample_mapping, "r") as file_handle:
+            logger.info(
+                "-> Reading minimiser2sample mapping file to match raptor bin ids to sample names"
+            )
             reader = csv.DictReader(file_handle, delimiter="\t")
             for row in reader:
-                sample_name_mapping[row['minimiser_id']] = row['sample_name']
+                sample_name_mapping[row["minimiser_id"]] = row["sample_name"]
 
         with open(self.search_results) as file_handle:
             for line in file_handle:
@@ -108,7 +122,7 @@ class IndexResultParser:
                         dataset_mapping[int(elements[0][1:])] = elements[1].rstrip()
                 # Parse index hits -> Each query has a number of bins assigned Q1   3,4,5,6
                 else:
-                    elements = line.rstrip().split('\t')
+                    elements = line.rstrip().split("\t")
                     cts_id = elements[0]
                     results[cts_id] = {}
                     # By default not detected in any sample
@@ -120,64 +134,79 @@ class IndexResultParser:
                         for this_sample in elements[1].split(","):
                             # Save detected bins and directly translate into sample identifier
                             detected_samples.add(int(this_sample))
-                            results[cts_id][sample_name_mapping[dataset_mapping[int(this_sample)]]] = self.kmer_ratio
-                            #results[cts_id].append(sample_name_mapping[dataset_mapping[int(this_sample)]])
+                            results[cts_id][
+                                sample_name_mapping[dataset_mapping[int(this_sample)]]
+                            ] = self.kmer_ratio
+                            # results[cts_id].append(sample_name_mapping[dataset_mapping[int(this_sample)]])
                         # Update not detected samples by removing bins with at least >= k-mer fraction
                         not_detected_samples = not_detected_samples - detected_samples
                     # Write annotation status for samples without a hit
                     for this_sample in not_detected_samples:
-                        results[cts_id][sample_name_mapping[dataset_mapping[int(this_sample)]]] = None
-        results = pd.DataFrame.from_dict(results, orient='index', dtype='Sparse[float64, nan]')
+                        results[cts_id][
+                            sample_name_mapping[dataset_mapping[int(this_sample)]]
+                        ] = None
+        results = pd.DataFrame.from_dict(
+            results, orient="index", dtype="Sparse[float64, nan]"
+        )
         logger.info(f"-> Parsed {len(results)} query sequences")
         return results
+
 
 def main():
     parser = ArgumentParser(
         description="parseKmer - Parse search results of Raptor and Kmindex",
         formatter_class=ArgumentDefaultsHelpFormatter,
-        epilog=epilog)
-    parser.add_argument(
-        '--search-results', dest='search_results',
-        action='store',
-        help='Output file of k-mer index search',
-        required=True
+        epilog=epilog,
     )
     parser.add_argument(
-        '--output', dest='output',
-        action='store',
-        help='Output table listing detection status in individual RNA-seq samples',
-        required=True
-    )
-    parser.add_argument(
-        '--method', dest='method',
-        action='store',
+        "--search-results",
+        dest="search_results",
+        action="store",
+        help="Output file of k-mer index search",
         required=True,
-        help='Input file is from Raptor/kmindex'
     )
     parser.add_argument(
-        '--raptor-sample-mapping', dest='raptor_sample_mapping',
-        action='store',
+        "--output",
+        dest="output",
+        action="store",
+        help="Output table listing detection status in individual RNA-seq samples",
+        required=True,
+    )
+    parser.add_argument(
+        "--method",
+        dest="method",
+        action="store",
+        required=True,
+        help="Input file is from Raptor/kmindex",
+    )
+    parser.add_argument(
+        "--raptor-sample-mapping",
+        dest="raptor_sample_mapping",
+        action="store",
         required=False,
-        help='Mapping of Raptor HIBF bins to real samples identifiers'
+        help="Mapping of Raptor HIBF bins to real samples identifiers",
     )
     parser.add_argument(
-        '--kmer-ratio', dest='kmer_ratio',
-        action='store',
+        "--kmer-ratio",
+        dest="kmer_ratio",
+        action="store",
         required=False,
         default=0.7,
         type=float,
-        help='K-mer ratio used for search'
+        help="K-mer ratio used for search",
     )
 
     args = parser.parse_args()
-    logger.info(f'-> Parsing k-mer query file {args.search_results}')
+    logger.info(f"-> Parsing k-mer query file {args.search_results}")
     if args.kmer_ratio > 1.0 or args.kmer_ratio < 0.0:
         raise ValueError("k-mer ratio needs to be [0,1)")
 
-    parser = IndexResultParser(search_results=args.search_results,
-                               method=args.method,
-                               raptor_sample_mapping=args.raptor_sample_mapping,
-                               kmer_ratio=args.kmer_ratio)
+    parser = IndexResultParser(
+        search_results=args.search_results,
+        method=args.method,
+        raptor_sample_mapping=args.raptor_sample_mapping,
+        kmer_ratio=args.kmer_ratio,
+    )
     parsed_results = parser.parse_results()
     parser.write_result(parsed_results, args.output)
 

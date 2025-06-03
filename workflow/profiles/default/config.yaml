@@ -21,16 +21,6 @@ set-threads:
   gather_raptor_subindex_results: 1
   gather_kmindex_subindex_results: 1
 
-  add_transcript_expression: 1
-  prepare_requant: 1
-  generate_context_fa: 1
-  bowtie_index: 4
-  bowtie_align: 8
-  requantify: 1
-  add_quant_counts: 1
-  find_cts_matching_wt: 8
-  insert_size: 1
-
 set-resources:
   raptor_prepare_per_sample:
     mem_mb: 16000 + ((attempt - 1) * 10000)
@@ -51,11 +41,11 @@ set-resources:
     mem_mb: 2000 + ((attempt - 1) * 2000)
     runtime: "1h"
   parse_kmindex_subindex_search:
-    mem_mb: 2000 + ((attempt - 1) * 500)
+    mem_mb: 2000 + ((attempt - 1) * 2000)
     runtime: "1h"
   gather_raptor_subindex_results:
-    mem_mb: 20000 + ((attempt - 1) * 10000)
+    mem_mb: 20000 + ((attempt - 1) * 20000)
     runtime: "1h"
   gather_kmindex_subindex_results:
-    mem_mb: 20000 + ((attempt - 1) * 10000)
+    mem_mb: 20000 + ((attempt - 1) * 20000)
     runtime: "1h"
