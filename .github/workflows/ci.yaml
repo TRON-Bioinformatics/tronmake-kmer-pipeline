@@ -31,6 +31,7 @@ jobs:
           miniforge-variant: Miniforge3
           miniforge-version: latest
           use-only-tar-bz2: true
+          channel-priority: strict
 
       - name: Lint with Snakemake
         shell: bash -l {0}
@@ -64,9 +65,9 @@ jobs:
           miniforge-variant: Miniforge3
           miniforge-version: latest
           use-only-tar-bz2: true
+          channel-priority: strict
 
       - name: Run tests
         shell: bash -l {0}
         run: |
-          pip install pytest-workflow==2.0.1 pytest==8.0.2
           make test
