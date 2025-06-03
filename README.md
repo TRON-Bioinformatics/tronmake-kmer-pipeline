@@ -2,10 +2,12 @@
 
 <!-- badges: start -->
 
-[![Release](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/-/badges/release.svg)](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/-/releases)
 [![Snakemake](https://img.shields.io/badge/snakemake-9.1.6-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
-[![pipeline status](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/badges/develop/pipeline.svg)](https://gitlab.rlp.net/tron/tronmake-kmer-pipeline/commits/main)
-
+![Python](https://img.shields.io/badge/python-3670A0?style=flat-square&logo=python&logoColor=ffdd54)
+![Pytest](https://img.shields.io/badge/pytest-%23ffffff.svg?style=flat-square&logo=pytest&logoColor=2f9fe3)
+[![CI](https://github.com/TRON-Private/tronmake-kmer-pipeline/actions/workflows/ci.yaml/badge.svg)](https://github.com/TRON-Private/tronmake-kmer-pipeline/actions/workflows/ci.yaml/badge.svg)
+[![Release](https://img.shields.io/badge/release-v2.0.2-blue?style=flat)](https://github.com/TRON-Private/tronmake-kmer-pipeline/releases/tag/v2.0.2)
+[![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://opensource.org/licenses/MIT)
 
 <!-- badges: end -->
 
