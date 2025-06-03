@@ -4,5 +4,7 @@ query/
 index
 kmer
 **/__pycache__
-
+conda_env/
+conda_env_test
+env/
 

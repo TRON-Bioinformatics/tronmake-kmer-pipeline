@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [ "**" ]
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  test_linting:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Cache Conda packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.conda/pkgs
+          key: conda-pkgs-${{ runner.os }}-${{ hashFiles('**/environment.yaml') }}
+          restore-keys: |
+            conda-pkgs-${{ runner.os }}-
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: environment.yaml
+          activate-environment: tronmake
+          auto-activate-base: false
+          miniforge-variant: Miniforge3
+          miniforge-version: latest
+          use-only-tar-bz2: true
+          channel-priority: strict
+
+      - name: Lint with Snakemake
+        shell: bash -l {0}
+        run: |
+          snakemake --lint
+
+  test_pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install libxml2
+        run: |
+          sudo apt update
+          sudo apt install -y libxml2
+
+      - name: Cache Conda packages
+        uses: actions/cache@v3
+        with:
+          path: ~/.conda/pkgs
+          key: conda-pkgs-${{ runner.os }}-${{ hashFiles('tests/ci.yaml') }}
+          restore-keys: |
+            conda-pkgs-${{ runner.os }}-
+
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+          environment-file: tests/ci.yaml
+          activate-environment: Snakemake
+          auto-activate-base: false
+          miniforge-variant: Miniforge3
+          miniforge-version: latest
+          use-only-tar-bz2: false
+          channel-priority: strict
+
+      - name: Run tests
+        shell: bash -l {0}
+        run: |
+          make test
