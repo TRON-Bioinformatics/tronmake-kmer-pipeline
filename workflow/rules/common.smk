@@ -176,11 +176,11 @@ def get_memory_raptor(wildcards, input):
     memory to prevent the job from failing
     """
 
-    memory = max(input.size_mb * 1.1, input.size_mb)
+    memory = max(input.size_mb * 1.4, input.size_mb)
     return memory
 
 
-def get_memory_raptor_build(wildcards):
+def get_memory_raptor_build(wildcards, attempt):
     """
     Calculate memory required for raptor build step.
     Memory consumption is growing approximately linearly with number of bins to be indexed.
@@ -189,7 +189,7 @@ def get_memory_raptor_build(wildcards):
     scaling_factor: ~0.15
     """
     samples_to_index = get_number_of_bin(samples)
-    estimated_memory = round(samples_to_index * 0.15 * 1024)
+    estimated_memory = round(samples_to_index * 0.15 * 1024) + ((attempt - 1) * 50000)
     estimated_memory = max(estimated_memory, 150000)
     return estimated_memory
 
