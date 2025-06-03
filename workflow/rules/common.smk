@@ -176,7 +176,7 @@ def get_memory_raptor(wildcards, input):
     memory to prevent the job from failing
     """
 
-    memory = max(input.size_mb * 1.1, input.size_mb)
+    memory = max(input.size_mb * 1.4, input.size_mb)
     return memory
 
 
