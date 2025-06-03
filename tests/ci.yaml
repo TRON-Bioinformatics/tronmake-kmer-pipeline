@@ -13,3 +13,5 @@ dependencies:
   - pyarrow=17.0.0
   - fastparquet=2024.5.0
   - numpy=2.0.1
+  - pytest
+  - pytest-workflow

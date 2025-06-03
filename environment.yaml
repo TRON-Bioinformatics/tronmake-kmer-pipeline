@@ -12,7 +12,6 @@ dependencies:
   - make
   - pandas
   - loguru
-  - pip:
-    - snakemake-storage-plugin-http
-    - snakemake-executor-plugin-cluster-generic
-    - snakemake-executor-plugin-slurm
+  - snakemake-storage-plugin-http
+  - snakemake-executor-plugin-cluster-generic
+  - snakemake-executor-plugin-slurm
