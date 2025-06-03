@@ -99,7 +99,7 @@ rule gather_fastq_kmtricks:
     output:
         temp('index/kmindex/tmp/{sample}.txt')
     container: 'docker://busybox:1.36.1-musl'
-    log: 'index/kmindex/gather_fastq_input.log'
+    log: 'index/kmindex/{sample}_gather_fastq_input.log'
     shell:
         'printf "{params.formatted_input}\n" > {output[0]}'
 
