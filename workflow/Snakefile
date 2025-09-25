@@ -27,6 +27,7 @@ include: "rules/kmindex.smk"
 include: "rules/raptor.smk"
 include: "rules/cuttlefish.smk"
 include: "rules/prepare_input.smk"
+include: "rules/jellyfish.smk"
 
 
 # Those rules are mainly cat, grep, etc. shell commands wihtout any computational footprint
