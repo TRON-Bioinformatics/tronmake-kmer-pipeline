@@ -13,7 +13,7 @@
         - "533edcf076516d19	AGAACTCAAGCAGGCGGCTC	38"
         - "533edcf076516d19	AGCCGCCTGCTTGAGTTCTA	37"
         - "533edcf076516d19	GCCGCCTGCTTGAGTTCTAC	40"
-    - path: "query/jellyfish/IT_N_103/quantitative_search.tsv"
+    - path: "query/jellyfish/IT_T_188/quantitative_search.tsv"
       md5sum: "1835da4aebea3019c77a535629fd70b7"
       contains:
         - "533edcf076516d19	AACTCAAGCAGGCGGCTCTC	31"
