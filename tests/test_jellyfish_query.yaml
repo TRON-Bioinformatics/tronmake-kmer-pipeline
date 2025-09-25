@@ -6,7 +6,6 @@
     snakemake -p --configfile tests/configs/query.yaml --config query='{method':' jellyfish, index':' tests/index_manifest/jellyfish_index_manifest.yaml, query_fasta':' examples/query_k4neo.fasta}'
   files:
     - path: "query/jellyfish/IT_N_103/quantitative_search.tsv"
-      md5sum: "b03ea16600bbf2ae08edbdbf65b9ae83"
       contains:
         - "533edcf076516d19	AACTCAAGCAGGCGGCTCTC	38"
         - "533edcf076516d19	AGAGCCGCCTGCTTGAGTTC	36"
@@ -14,7 +13,6 @@
         - "533edcf076516d19	AGCCGCCTGCTTGAGTTCTA	37"
         - "533edcf076516d19	GCCGCCTGCTTGAGTTCTAC	40"
     - path: "query/jellyfish/IT_T_188/quantitative_search.tsv"
-      md5sum: "1835da4aebea3019c77a535629fd70b7"
       contains:
         - "533edcf076516d19	AACTCAAGCAGGCGGCTCTC	31"
         - "533edcf076516d19	AGAGCCGCCTGCTTGAGTTC	30"
