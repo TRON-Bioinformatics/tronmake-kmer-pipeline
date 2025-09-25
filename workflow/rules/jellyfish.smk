@@ -5,19 +5,22 @@ checkpoint split_fasta:
         directory("query/jellyfish/split_fasta")
     container:
         "docker://busybox:1.36.1-musl"
+    threads: 1
+    log:
+        "query/logs/jellyfish/split_fasta.log",
     shell:
         """
         mkdir -p {output}
         awk '
             /^>/ {{
                 f = substr($1, 2) ".fasta"
-                file = "{output[0]}/" f
+                file = "{output}/" f
                 print $0 > file
                 next
             }}
             {{
                 print $0 >> file
-            }}' {input.query_fasta}
+            }}' {input.query_fasta} 2> {log}
         """
 
 rule jellyfish_query:
@@ -27,6 +30,8 @@ rule jellyfish_query:
     output:
         search_results = temp("query/jellyfish/{subindex}/{cts}.tsv")
     threads: 1
+    log:
+        "query/logs/jellyfish/{subindex}_{cts}_query.log",
     resources:
         mem_mb = 8000
     conda:
@@ -34,7 +39,7 @@ rule jellyfish_query:
     container:
         'docker://quay.io/biocontainers/kmer-jellyfish'
     shell:
-       "jellyfish query -s {input.query_fasta} -o {output.search_results} {input.index}"
+       "jellyfish query -s {input.query_fasta} -o {output.search_results} {input.index} 2> {log}"
 
 rule jellyfish_parse:
     input:
@@ -43,27 +48,28 @@ rule jellyfish_parse:
         parsed_result = temp("query/jellyfish/{subindex}/{cts}_parsed.tsv")
     container:
         "docker://busybox:1.36.1-musl"
+    threads: 1
+    log:
+        "query/logs/jellyfish/{subindex}_{cts}_query_parse.log",
     shell:
         """
-        awk -v OFS='\\t' '{{print "{wildcards.cts}", $1, $2}}' {input.query} > {output.parsed_result}
+        awk -v OFS='\\t' '
+            {{
+                print "{wildcards.cts}", $1, $2
+            }}' {input.query} > {output.parsed_result} 2> {log}
         """
-
-def aggregate_input(wildcards):
-    
-    checkpoint_output = checkpoints.split_fasta.get(**wildcards).output[0]
-    
-    return expand("query/jellyfish/{subindex}/{cts}_parsed.tsv",
-           subindex=wildcards.subindex,
-           cts=glob_wildcards(os.path.join(checkpoint_output, "{cts}.fasta")).cts)
 
 rule combine_jellyfish:
     input:
-        aggregate_input
+        aggregate_jellyfish_input
     output:
         "query/jellyfish/{subindex}/quantitative_search.tsv"
     container:
         "docker://busybox:1.36.1-musl"
+    threads: 1
+    log:
+        "query/logs/jellyfish/{subindex}_combine.log",
     shell:
-        "cat {input} > {output}"
+        "cat {input} > {output} 2> {log}"
 
 

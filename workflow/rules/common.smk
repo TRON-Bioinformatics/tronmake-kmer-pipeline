@@ -24,9 +24,10 @@ def validate_config(config):
 
     if config["modus"]["query"]:
         assert config["query"]["index"] is not None, "k-mer index required for search"
-        assert (
-            config["query"]["kmer_ratio"] is not None if config["query"]["method"] in ["raptor", "kmindex"] else True,
-        ), "k-mer ratio required for search"
+        if config["query"]["method"] in ["raptor", "kmindex"]:
+            assert (
+                config["query"]["kmer_ratio"] is not None
+            ), "k-mer ratio required for search"
 
     if config["modus"]["indexing"]:
         assert (
@@ -237,3 +238,11 @@ def get_subindex_results_raptor(wildcards):
     return expand(
         "query/raptor/{subindex}/parsed_search.tsv.gz", subindex=raptor_indices
     )
+
+def aggregate_jellyfish_input(wildcards):
+    
+    checkpoint_output = checkpoints.split_fasta.get(**wildcards).output[0]
+    
+    return expand("query/jellyfish/{subindex}/{cts}_parsed.tsv",
+           subindex=wildcards.subindex,
+           cts=glob_wildcards(os.path.join(checkpoint_output, "{cts}.fasta")).cts)
