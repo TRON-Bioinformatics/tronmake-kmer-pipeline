@@ -40,6 +40,7 @@ localrules:
     estimate_bf_size,
     write_kmtricks_fof,
     kmindex,
+    split_fasta
 
 
 rule all:

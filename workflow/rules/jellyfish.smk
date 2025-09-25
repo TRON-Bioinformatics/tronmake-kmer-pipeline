@@ -3,6 +3,8 @@ checkpoint split_fasta:
         query_fasta = config["query"]["query_fasta"],
     output:
         directory("query/jellyfish/split_fasta")
+    container:
+        "docker://busybox:1.36.1-musl"
     shell:
         """
         mkdir -p {output}
@@ -27,6 +29,10 @@ rule jellyfish_query:
     threads: 1
     resources:
         mem_mb = 8000
+    conda:
+        '../envs/jellyfish.yaml'
+    container:
+        'docker://quay.io/biocontainers/kmer-jellyfish'
     shell:
        "jellyfish query -s {input.query_fasta} -o {output.search_results} {input.index}"
 
@@ -35,6 +41,8 @@ rule jellyfish_parse:
         query = "query/jellyfish/{subindex}/{cts}.tsv"
     output:
         parsed_result = temp("query/jellyfish/{subindex}/{cts}_parsed.tsv")
+    container:
+        "docker://busybox:1.36.1-musl"
     shell:
         """
         awk -v OFS='\\t' '{{print "{wildcards.cts}", $1, $2}}' {input.query} > {output.parsed_result}
@@ -48,11 +56,13 @@ def aggregate_input(wildcards):
            subindex=wildcards.subindex,
            cts=glob_wildcards(os.path.join(checkpoint_output, "{cts}.fasta")).cts)
 
-rule combine_metrics:
+rule combine_jellyfish:
     input:
         aggregate_input
     output:
         "query/jellyfish/{subindex}/quantitative_search.tsv"
+    container:
+        "docker://busybox:1.36.1-musl"
     shell:
         "cat {input} > {output}"
 
