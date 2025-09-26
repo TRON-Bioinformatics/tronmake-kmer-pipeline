@@ -38,6 +38,10 @@ Depending on the selected k-mer method the workflow consist of different steps.
 * Extract k-mers and construct compacted De Bruijn Graphs (cDBG)
 * Compress maximal unitigs
 
+**JellyFish**
+
+* Search in CountingBloomFilter for query k-mers
+* Parse and annotate each k-mer count with cts from input fasta
 
 
 ## Usage
@@ -86,6 +90,10 @@ kmindex_test_index:
   samples: 1
   path: 'index/kmindex/global_index'
   method: kmindex
+
+jellyfish_test_index:
+  path: 'examples/jellyfish/IT_N_103.jf'
+  method: jellyfish
 ```
 
 With this manifest the query sequences would be searched in the k-mer indices of Raptor and kmindex.
@@ -225,6 +233,10 @@ query/
 Aggregated search results are provided as compressed binary file. You can use R or python to read the detection matrix file.
 
 * `query/<method>/search.parquet`: Containes aggregated search results over all subindices as Apache parquet files.
+
+Quantitative annotation of search results are provided for each JellyFish index as simple tsv file.
+
+* `query/jellyfish/<index_name>/quantitative_search.tsv`
 
 
 ## References
