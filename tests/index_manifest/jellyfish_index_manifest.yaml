@@ -1,0 +1,9 @@
+IT_N_103:
+  samples: 1
+  path: 'examples/jellyfish/IT_N_103.jf'
+  method: jellyfish
+
+IT_T_188:
+  samples: 1
+  path: 'examples/jellyfish/IT_T_188.jf'
+  method: jellyfish
