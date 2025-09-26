@@ -1,5 +1,6 @@
 import pandas as pd
 import yaml
+from collections import defaultdict
 
 
 def validate_config(config):
@@ -18,13 +19,15 @@ def validate_config(config):
     assert config["query"]["method"] in [
         "raptor",
         "kmindex",
+        "jellyfish"
     ], "Selected method not supported"
 
     if config["modus"]["query"]:
         assert config["query"]["index"] is not None, "k-mer index required for search"
-        assert (
-            config["query"]["kmer_ratio"] is not None
-        ), "k-mer ratio required for search"
+        if config["query"]["method"] in ["raptor", "kmindex"]:
+            assert (
+                config["query"]["kmer_ratio"] is not None
+            ), "k-mer ratio required for search"
 
     if config["modus"]["indexing"]:
         assert (
@@ -54,14 +57,26 @@ def get_final_output(samples: pd.DataFrame, index_struct: dict):
     final_output = []
     if config["modus"]["query"]:
         index_methods = set()
+        quant_methods = defaultdict(list)
         for index_id, index_properties in index_struct.items():
             method = index_properties.get("method", None)
             if method is None:
                 raise ValueError(f"k-mer method not specified for index: {index_id}")
-            index_methods.add(method)
+            if not method == "jellyfish":
+                index_methods.add(method)
+            elif method == "jellyfish":
+                quant_methods[method].append(index_id)
+        # Only for raptor and kmindex
         final_output.extend(
             expand("query/{method}/search.parquet", method=index_methods)
         )
+
+        for quant_method, quant_samples in quant_methods.items():
+            for this_sample in quant_samples:
+                final_output.append(
+                    f"query/{quant_method}/{this_sample}/quantitative_search.tsv",
+                )
+
 
     elif config["modus"]["indexing"]:
         method = config["indexing"]["method"]
@@ -223,3 +238,11 @@ def get_subindex_results_raptor(wildcards):
     return expand(
         "query/raptor/{subindex}/parsed_search.tsv.gz", subindex=raptor_indices
     )
+
+def aggregate_jellyfish_input(wildcards):
+    
+    checkpoint_output = checkpoints.split_fasta.get(**wildcards).output[0]
+    
+    return expand("query/jellyfish/{subindex}/{cts}_parsed.tsv",
+           subindex=wildcards.subindex,
+           cts=glob_wildcards(os.path.join(checkpoint_output, "{cts}.fasta")).cts)
