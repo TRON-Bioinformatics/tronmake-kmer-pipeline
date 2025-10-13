@@ -1,4 +1,4 @@
-- name: jellyfish_query
+- name: jellyfish_build
   tags:
     - jellyfish
     - query
