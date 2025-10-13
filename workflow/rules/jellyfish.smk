@@ -73,13 +73,14 @@ rule combine_jellyfish:
         "cat {input} > {output} 2> {log}"
 
 
-rule jellyfish_index:
+rule jellyfish_index: 
     input:
         fastq = get_ntcard_fastq
     output:
         jf = "index/jellyfish/{sample}.jf"
     params:
         kmer_size = int(config["indexing"]["kmer_size"]),
+        workdir = lambda wildcards, output: os.path.dirname(output.jf)
     conda:
         '../envs/jellyfish.yaml'
     container:
@@ -90,12 +91,24 @@ rule jellyfish_index:
     log:
         'index/logs/jellyfish/{sample}_jf_build.log'
     shell:
-        'zcat {input.fastq} | '
-        'jellyfish count '
-        '/dev/stdin '
-        '-m {params.kmer_size} '
-        '-s 1G '
-        '-t {threads} '
-        '-o {output.jf} '
-        '&> {log}'
-    
+        """
+        # Create FIFO as replacement for /dev/fd0
+        ! test -f {params.workdir}/jf_fifo && mkfifo {params.workdir}/jf_fifo
+
+        # Start gunzip in background and write to FIFO 
+        zcat {input.fastq} > {params.workdir}/jf_fifo &
+        # Save PID of gunzip command
+        pid=$!
+
+        jellyfish count \\
+            {params.workdir}/jf_fifo \\
+            -m {params.kmer_size} \\
+            -s 1G \\
+            -t {threads} \\
+            -o {output.jf} \\
+            &> {log}
+
+        # Wait until zcat is finished before deleting the FIFO
+        wait $pid
+        rm -f {params.workdir}/jf_fifo
+        """

@@ -1,5 +1,5 @@
 jobs: 100
-use-conda: true
+#use-conda: true
 local-cores: 8
 latency-wait: 120
 rerun-triggers: mtime
