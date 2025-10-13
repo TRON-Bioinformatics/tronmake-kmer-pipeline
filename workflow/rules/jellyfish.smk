@@ -73,3 +73,29 @@ rule combine_jellyfish:
         "cat {input} > {output} 2> {log}"
 
 
+rule jellyfish_index:
+    input:
+        fastq = get_ntcard_fastq
+    output:
+        jf = "index/jellyfish/{sample}.jf"
+    params:
+        kmer_size = int(config["indexing"]["kmer_size"]),
+    conda:
+        '../envs/jellyfish.yaml'
+    container:
+        'docker://quay.io/biocontainers/kmer-jellyfish'
+    threads: 2
+    resources:
+        mem_mb = 8000
+    log:
+        'index/logs/jellyfish/{sample}_jf_build.log'
+    shell:
+        'zcat {input.fastq} | '
+        'jellyfish count '
+        '/dev/stdin '
+        '-m {params.kmer_size} '
+        '-s 1G '
+        '-t {threads} '
+        '-o {output.jf} '
+        '&> {log}'
+    
