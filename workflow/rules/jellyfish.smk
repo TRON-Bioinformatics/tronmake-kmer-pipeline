@@ -28,7 +28,7 @@ rule jellyfish_query:
         query_fasta = "query/jellyfish/split_fasta/{cts}.fasta",
         index = get_index
     output:
-        search_results = temp("query/jellyfish/{subindex}/{cts}.tsv")
+        search_results = temp("query/jellyfish/{subindex}/{cts}_query.tsv")
     threads: 1
     log:
         "query/logs/jellyfish/{subindex}_{cts}_query.log",
@@ -43,7 +43,7 @@ rule jellyfish_query:
 
 rule jellyfish_parse:
     input:
-        query = "query/jellyfish/{subindex}/{cts}.tsv"
+        query = "query/jellyfish/{subindex}/{cts}_query.tsv"
     output:
         parsed_result = temp("query/jellyfish/{subindex}/{cts}_parsed.tsv")
     container:
