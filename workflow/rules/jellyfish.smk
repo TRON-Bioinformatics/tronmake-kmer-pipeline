@@ -28,7 +28,7 @@ rule jellyfish_query:
         query_fasta = "query/jellyfish/split_fasta/{cts}.fasta",
         index = get_index
     output:
-        search_results = temp("query/jellyfish/{subindex}/{cts}.tsv")
+        search_results = temp("query/jellyfish/{subindex}/{cts}_query.tsv")
     threads: 1
     log:
         "query/logs/jellyfish/{subindex}_{cts}_query.log",
@@ -43,7 +43,7 @@ rule jellyfish_query:
 
 rule jellyfish_parse:
     input:
-        query = "query/jellyfish/{subindex}/{cts}.tsv"
+        query = "query/jellyfish/{subindex}/{cts}_query.tsv"
     output:
         parsed_result = temp("query/jellyfish/{subindex}/{cts}_parsed.tsv")
     container:
@@ -73,3 +73,42 @@ rule combine_jellyfish:
         "cat {input} > {output} 2> {log}"
 
 
+rule jellyfish_index: 
+    input:
+        fastq = get_ntcard_fastq
+    output:
+        jf = "index/jellyfish/{sample}.jf"
+    params:
+        kmer_size = int(config["indexing"]["kmer_size"]),
+        workdir = lambda wildcards, output: os.path.dirname(output.jf)
+    conda:
+        '../envs/jellyfish.yaml'
+    container:
+        'docker://quay.io/biocontainers/kmer-jellyfish'
+    threads: 2
+    resources:
+        mem_mb = 8000
+    log:
+        'index/logs/jellyfish/{sample}_jf_build.log'
+    shell:
+        """
+        # Create FIFO as replacement for /dev/fd0
+        ! test -f {params.workdir}/jf_fifo && mkfifo {params.workdir}/jf_fifo
+
+        # Start gunzip in background and write to FIFO 
+        zcat {input.fastq} > {params.workdir}/jf_fifo &
+        # Save PID of gunzip command
+        pid=$!
+
+        jellyfish count \\
+            {params.workdir}/jf_fifo \\
+            -m {params.kmer_size} \\
+            -s 1G \\
+            -t {threads} \\
+            -o {output.jf} \\
+            &> {log}
+
+        # Wait until zcat is finished before deleting the FIFO
+        wait $pid
+        rm -f {params.workdir}/jf_fifo
+        """

@@ -40,9 +40,9 @@ Depending on the selected k-mer method the workflow consist of different steps.
 
 **JellyFish**
 
-* Search in CountingBloomFilter for query k-mers
-* Parse and annotate each k-mer count with cts from input fasta
-
+* Search in CountingBloomFilter for query k-mers.
+* Parse and annotate each k-mer count with cts from input fasta.
+* Create CountingBloomFilter from individual samples.
 
 ## Usage
 
@@ -234,7 +234,7 @@ Aggregated search results are provided as compressed binary file. You can use R 
 
 * `query/<method>/search.parquet`: Containes aggregated search results over all subindices as Apache parquet files.
 
-Quantitative annotation of search results are provided for each JellyFish index as simple tsv file.
+Quantitative annotation of search results are provided for each JellyFish index as simple TSV file.
 
 * `query/jellyfish/<index_name>/quantitative_search.tsv`
 

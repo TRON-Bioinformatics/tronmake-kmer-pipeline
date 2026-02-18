@@ -93,6 +93,13 @@ def get_final_output(samples: pd.DataFrame, index_struct: dict):
                         sample=samples.bin_id,
                     )
                 )
+            case "jellyfish":
+                final_output.extend(
+                    expand(
+                        "index/jellyfish/{sample}.jf",
+                        sample=samples.bin_id,
+                    )
+                )
             case _:
                 sys.exit(1)
     else:

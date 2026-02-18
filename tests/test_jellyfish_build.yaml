@@ -1,0 +1,10 @@
+- name: jellyfish_build
+  tags:
+    - jellyfish
+    - query
+  command: snakemake -p --configfile tests/configs/jellyfish.yaml
+  files:
+    - path: "index/jellyfish/1.jf"
+
+
+
