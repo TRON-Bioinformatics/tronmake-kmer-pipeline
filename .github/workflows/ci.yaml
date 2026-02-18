@@ -65,7 +65,6 @@ jobs:
           miniforge-variant: Miniforge3
           miniforge-version: latest
           use-only-tar-bz2: false
-          channel-priority: strict
 
       - name: Run tests
         shell: bash -l {0}
