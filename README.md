@@ -5,81 +5,79 @@
 [![Snakemake](https://img.shields.io/badge/snakemake-9.1.6-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 ![Python](https://img.shields.io/badge/python-3670A0?style=flat-square&logo=python&logoColor=ffdd54)
 ![Pytest](https://img.shields.io/badge/pytest-%23ffffff.svg?style=flat-square&logo=pytest&logoColor=2f9fe3)
-[![CI](https://github.com/TRON-Private/tronmake-kmer-pipeline/actions/workflows/ci.yaml/badge.svg)](https://github.com/TRON-Private/tronmake-kmer-pipeline/actions/workflows/ci.yaml/badge.svg)
-[![Release](https://img.shields.io/badge/release-v2.0.2-blue?style=flat)](https://github.com/TRON-Private/tronmake-kmer-pipeline/releases/tag/v2.0.2)
+[![CI](https://github.com/TRON-Bioinformatics/tronmake-kmer-pipeline/actions/workflows/ci.yaml/badge.svg)](https://github.com/TRON-Bioinformatics/tronmake-kmer-pipeline/actions/workflows/ci.yaml/badge.svg)
+[![Release](https://img.shields.io/badge/release-v3.0.0-blue?style=flat)](https://github.com/TRON-Bioinformatics/tronmake-kmer-pipeline/releases/tag/v3.0.0)
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://opensource.org/licenses/MIT)
 
 <!-- badges: end -->
 
 
-The TronMake k-mer pipeline is part of the software solution k4neo for indexing large collections of healthy and tumor
-RNA-seq datasets to demonstrate tumor-specificity of (neo)antigen candidates.
+The TronMake k-mer pipeline is a designed to index large collections sequencing datasets using different k-mer datastructures.
 
-The workflow implements the best practice workflows of the state-of-the-art k-mer indexing methods [Raptor](https://github.com/seqan/raptor)
-and [kmindex](https://github.com/tlemane/kmindex) as well as compacted De Bruijn Graphs (cDBG) construction with [cuttlefish](https://github.com/COMBINE-lab/cuttlefish).
+The pipeline implements best-practice workflows for several state-of-the-art k-mer indexing methods: [Raptor](https://github.com/seqan/raptor), [kmindex](https://github.com/tlemane/kmindex), compacted De Bruijn Graph (cDBG) construction via [cuttlefish](https://github.com/COMBINE-lab/cuttlefish) and counting bloom filter construction via [Jellyfish](https://github.com/gmarcais/Jellyfish)
 
-Depending on the selected k-mer method the workflow consist of different steps.
+Depending on the selected method, the workflow follows different processing steps:
 
 **Raptor**
-
-* Extracting minimiser from raw fasta files (`k+4`)
-* Creating a HIBF layout 
-* Creating HIBF index with `w,k` schema
+* Extract minimisers from raw FASTA files (using a window of $k+4$).
+* Generate a Hierarchical Interleaved Bloom Filter (HIBF) layout.
+* Construct the HIBF index based on the specified $w, k$ schema.
 
 **Kmindex**
-
-* Estimate k-mer cardinality of individual samples
-* Estimate optimal Bloom filter size based on k-mer cardinality
-* Extracting k-mers with Kmtricks (presence/absence or quantitative index)
-* Creation of global meta-index with Kmindex
+* Estimate k-mer cardinality for individual samples.
+* Determine the optimal Bloom filter size based on estimated cardinality.
+* Extract k-mers using Kmtricks to create either presence/absence or quantitative indices.
+* Construct a global meta-index using Kmindex.
 
 **Cuttlefish**
+* Extract k-mers and construct compacted De Bruijn Graphs (cDBG).
+* Compress maximal unitigs for efficient storage and querying.
 
-* Extract k-mers and construct compacted De Bruijn Graphs (cDBG)
-* Compress maximal unitigs
-
-**JellyFish**
-
-* Search in CountingBloomFilter for query k-mers.
-* Parse and annotate each k-mer count with cts from input fasta.
-* Create CountingBloomFilter from individual samples.
+**Jellyfish**
+* Construct k-mer counting filters from individual samples.
+* Search these filters for query k-mers.
+* Parse and annotate each k-mer count using the input FASTA files.
 
 ## Usage
 
-In general we recommend running the workflow from the k4neo python package. However, you can also
-execute it manually to create k-mer indices and to execute queries against it. 
+To run it, download the project, create the conda environment and modify the [config file](config/config.yaml) to fit your requirements. 
 
-Download the project and run as follows. Modify the [config file](config/config.yaml) to fit your needs
-and execute the workflow. Moreover you need to provide an index manifest file in **query** mode describing the
-indices to query. Have a look at the [example manifest](tests/configs/raptor_index.yaml)
+```
+conda env create -p conda_env -f environment.yaml
+```
 
-We also provide a python wrapper (python >= 3.10 supported) to execute the workflow and configure the pipeline based on the arguments passed.
+When running in **query** mode, you must provide an index manifest file describing the indices to be queried. See the [example manifest](tests\index_manifest\raptor_index_manifest.yaml) for details.
 
 ### Input
 
-#### Index mode
+#### Index Mode
 
-The table with fastq files expects two (three) tab-separated columns without a header. Multiple FASTQs can be provided separated by commas.
+The input is a tab-separated sample sheet without a header. Multiple files per sample can be provided, separated by commas.
+
+**Option 1: FASTQ only
+**
+If only FASTQ files are used, the table should contain two columns: `bin_id` and `fastq` file path.
 
 | bin_id   | fastq                                                   |
 |:--------:|:-------------------------------------------------------:|
 | sample_1 | /path/to/sample_1.fastq.gz                              |
 | sample_2 | /path/to/sample_2.fastq.gz,/path/to/sample_2_2.fastq.gz |
 
-If input also contains reads in (u)BAM format, the table with input files expects three tab-separated columns without a header. Multiple FASTQs and BAMs can be provided separated by commas.
+**Option 2: Mixed FASTQ and BAM**
+If the input includes reads in (u)BAM format, the table must contain three columns: `bin_id`, `fastq` (or `bam`) file path, and `file_type`.
 
-| bin_id   | fastq                                                   | file_type |
+| bin_id   | fastq/bam                                               | file_type |
 |:--------:|:-------------------------------------------------------:|:---------:|
 | sample_1 | /path/to/sample_1.fastq.gz                              | fastq     |
 | sample_2 | /path/to/sample_2.bam,/path/to/sample_2_2.bam           | bam       |
-| sample_3 | /path/to/sample_3.fastq.gz,/path/to/sample_3_2.fastq.gz | bam       |
+| sample_3 | /path/to/sample_3.fastq.gz,/path/to/sample_3_2.fastq.gz | fastq     |
 
-#### Query mode
+#### Query Mode
 
-The index manifest file for querying expects a YAML file describing the indices, their location and optionally a sample-index mapping required for parsing Raptor results.
-The query sequences are specified in the general [config file](config/config.yaml).
+For querying, an index manifest file (YAML) is required to describe the indices, their locations, and optionally a sample-index mapping for parsing Raptor results. The query sequences themselves are specified in the general [config file](config/config.yaml).
 
-```
+Example manifest:
+```yaml
 raptor_test_index:
   samples: 1
   path: 'examples/raptor.index'
@@ -96,12 +94,12 @@ jellyfish_test_index:
   method: jellyfish
 ```
 
-With this manifest the query sequences would be searched in the k-mer indices of Raptor and kmindex.
+Using this manifest, the pipeline will search for query sequences across all listed indices.
 
 
 ### Execution
 
-#### SnakeMake command line
+#### Snakemake Command Line
 
 ```bash
 
@@ -113,45 +111,15 @@ snakemake \
     [--conda-prefix </path/to/conda/env/location>]
 
 ```
+
 * `directory`: Specifies where the query/index results are stored.
 * `configfile`: The path to the config file.
-* `software-deployment-method`: Currently conda and singularity is supported and tested.
+* `software-deployment-method`: Currently conda and apptainer are supported and tested.
 * `--conda-prefix` (optional): Where should the conda environments be stored
 
-#### Wrapper execution (recommended)
+## Cloud Execution (WDL)
 
-```bash
-
-# Create a k-mer index with raptor
-python tronmake-kmer.py \
-    index \
-    --samples examples/samples.tsv \
-    --kmer 21 \
-    --method raptor \
-    --fpr 0.05 \
-    --workdir /path/to/index \
-    --slurm
-
-# Create a k-mer index with kmindex
-python tronmake-kmer.py \
-    index \
-    --samples examples/samples.tsv \
-    --kmer 21 \
-    --method kmindex \
-    --fpr 0.05 \
-    --workdir /path/to/index \
-    --slurm
-
-# Query k-mer indices defined in manifest file for sequences in fasta file
-python tronmake-kmer.py \
-    query \
-    --index-manifest tests/index_manifest/raptor_index_manifest.yaml \
-    --fasta examples/query.fasta \
-    --detection-ratio 0.7 \
-    --workdir /path/to/query \
-    --slurm
-
-```
+For cloud-based execution, a WDL workflow is provided in the `WDL/` directory. This allows for scalable indexing of large datasets using platforms like Terra or Cromwell, handling tasks such as BAM to FASTQ conversion and distributed minimiser extraction before building the final Raptor index.
 
 ### Output
 
@@ -207,13 +175,13 @@ index/
 * `index/raptor/raptor.index` : Raptor HIBF index
 * `index/raptor/minimiser` : Raptor winnowing minimiser files
 * `index/raptor/index.mapping` : Sample mapping. This file maps raptor bin paths to sample names in the original sample sheet (required for parsing results of query)
-* `index/kmindex/prepare_input` : Contains fastq files of BAM samples.
+* `index/prepare_input` : Contains fastq files of BAM samples.
 
 
 #### Query mode
 
 The output is contained in the `query` directory inside the folder specified with the option `--directory`.
-The resulting search files are separated by sub-indices defined in the k-mer manifest file. 
+The resulting search results are organized by sub-indices defined in the k-mer manifest file. 
 A sample directory for a given index search contains the subdirectories of subindices and aggregated search results:
 
 ```
@@ -232,7 +200,7 @@ query/
 
 Aggregated search results are provided as compressed binary file. You can use R or python to read the detection matrix file.
 
-* `query/<method>/search.parquet`: Containes aggregated search results over all subindices as Apache parquet files.
+* `query/<method>/search.parquet`: Contains aggregated search results over all subindices as Apache parquet files.
 
 Quantitative annotation of search results are provided for each JellyFish index as simple TSV file.
 
@@ -246,3 +214,7 @@ Quantitative annotation of search results are provided for each JellyFish index 
 * Téo Lemane, Nolan Lezzoche, Julien Lecubin, Eric Pelletier, Magali Lescot, Rayan Chikhi, Pierre Peterlongo kmindex and ORA: indexing and real-time user-friendly queries in terabytes-sized complex genomic datasets. bioRxiv 2023.05.31.543043; doi: https://doi.org/10.1101/2023.05.31.543043  
 
 * Jamshed Khan, Rob Patro, Cuttlefish: fast, parallel and low-memory compaction of de Bruijn graphs from large-scale genome collections, Bioinformatics, Volume 37, Issue Supplement_1, July 2021, Pages i177–i186, https://doi.org/10.1093/bioinformatics/btab309  
+
+* Marçais, G., & Kingsford, C. (2011). A fast, lock-free approach for efficient parallel counting of occurrences of k-mers. Bioinformatics, 27(6), 764-770.
+
+* Mölder, F., Jablonski, K. P., Letcher, B., Hall, M. B., van Dyken, P. C., Tomkins-Tinch, C. H., ... & Köster, J. (2025). Sustainable data analysis with Snakemake. F1000Research, 10, 33.
