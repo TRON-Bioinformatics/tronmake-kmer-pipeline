@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+# Originally from HowDeSBT by Robert S. Harris
+# Source: https://github.com/medvedevgroup/HowDeSBT/blob/master/scripts/simple_bf_size_estimate.py
+# Copyright (c) 2018 Robert S. Harris
+# SPDX-License-Identifier: MIT
+# License: see LICENSES/HowDeSBT-MIT.txt
+#
+# This file is an unmodified copy of the original Python 2 script.
+# A Python 3 port is available in simple_bf_size_estimate.py (converted with 2to3).
 """
 Estimate the proper size for BFs in an SBT, based on the theoretical bloom
 filter false positive rate.
