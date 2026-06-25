@@ -86,8 +86,10 @@ https://conda.anaconda.org/conda-forge/linux-64/hdf5-1.14.4-nompi_h2d575fe_105.c
 https://conda.anaconda.org/conda-forge/linux-64/libcblas-3.11.0-8_h0358290_openblas.conda#33a413f1095f8325e5c30fde3b0d2445
 https://conda.anaconda.org/conda-forge/linux-64/libgrpc-1.73.1-h3288cfb_1.conda#ff63bb12ac31c176ff257e3289f20770
 https://conda.anaconda.org/conda-forge/linux-64/liblapack-3.11.0-8_h47877c9_openblas.conda#809be8ba8712c77bc7d44c2d99390dc4
+https://conda.anaconda.org/conda-forge/noarch/loguru-0.7.3-pyh707e725_0.conda#49647ac1de4d1e4b49124aedf3934e02
 https://conda.anaconda.org/conda-forge/noarch/packaging-26.2-pyhc364b38_0.conda#4c06a92e74452cfa53623a81592e8934
 https://conda.anaconda.org/conda-forge/noarch/py-cpuinfo-9.0.0-pyhd8ed1ab_1.conda#46830ee16925d5ed250850503b5dc3a8
+https://conda.anaconda.org/conda-forge/noarch/pycparser-3.0-pyhcf101f3_0.conda#9c5491066224083c41b6d5635ed7107b
 https://conda.anaconda.org/conda-forge/noarch/python-tzdata-2026.2-pyhd8ed1ab_0.conda#f6ad7450fc21e00ecc23812baed6d2e4
 https://conda.anaconda.org/conda-forge/noarch/pytz-2026.2-pyhcf101f3_0.conda#03cb60f505ad3ada0a95277af5faeb1a
 https://conda.anaconda.org/conda-forge/noarch/setuptools-82.0.1-pyh332efcf_0.conda#8e194e7b992f99a5015edbd4ebd38efd
@@ -96,6 +98,7 @@ https://conda.anaconda.org/conda-forge/noarch/typing_extensions-4.15.0-pyhcf101f
 https://conda.anaconda.org/conda-forge/linux-64/aws-c-s3-0.8.6-h800fcd2_2.conda#50e0900a33add0c715f17648de6be786
 https://conda.anaconda.org/conda-forge/linux-64/azure-identity-cpp-1.12.0-ha729027_0.conda#3dab8d6fa3d10fe4104f1fbe59c10176
 https://conda.anaconda.org/conda-forge/linux-64/azure-storage-common-cpp-12.10.0-h4bb41a7_3.conda#1efaf34774bfb92ecf2fa8fa985b2752
+https://conda.anaconda.org/conda-forge/linux-64/cffi-2.0.0-py310he7384ee_1.conda#803e2d778b8dcccdc014127ec5001681
 https://conda.anaconda.org/conda-forge/linux-64/libgoogle-cloud-2.39.0-hdb79228_0.conda#a2e30ccd49f753fd30de0d30b1569789
 https://conda.anaconda.org/conda-forge/linux-64/numpy-1.26.4-py310hb13e2d6_0.conda#6593de64c935768b6bad3e19b3e978be
 https://conda.anaconda.org/conda-forge/noarch/python-dateutil-2.9.0.post0-pyhe01879c_2.conda#5b8d21249ff20967101ffa321cab24e8
@@ -107,6 +110,7 @@ https://conda.anaconda.org/conda-forge/linux-64/libgoogle-cloud-storage-2.39.0-h
 https://conda.anaconda.org/conda-forge/linux-64/numexpr-2.14.1-py310h34a7263_102.conda#1b9b79a5c6207097033be22785b89347
 https://conda.anaconda.org/conda-forge/linux-64/pandas-2.2.2-py310hf9f9076_1.conda#18100768350158f1795ab9ad7d06d5ca
 https://conda.anaconda.org/conda-forge/noarch/pip-26.1.2-pyh8b19718_0.conda#511fbc2c63d2c73650ad1755e4d357ba
+https://conda.anaconda.org/conda-forge/linux-64/zstandard-0.25.0-py310h139afa4_1.conda#3741aefc198dfed2e3c9adc79d706bb7
 https://conda.anaconda.org/conda-forge/linux-64/aws-sdk-cpp-1.11.606-h31ade35_1.conda#e33b3d2a2d44ba0fb35373d2343b71dd
 https://conda.anaconda.org/conda-forge/linux-64/azure-storage-files-datalake-cpp-12.12.0-h8b27e44_3.conda#7b738aea4f1b8ae2d1118156ad3ae993
 https://conda.anaconda.org/conda-forge/linux-64/fastparquet-2024.5.0-py310hf462985_2.conda#ce15bde91eb49e58eb6774b82d6cf762

@@ -1,4 +1,4 @@
-# TronMake k-mer pipeline
+# tronmake k-mer pipeline
 
 <!-- badges: start -->
 
@@ -12,7 +12,7 @@
 <!-- badges: end -->
 
 
-The TronMake k-mer pipeline is a designed to index large collections sequencing datasets using different k-mer datastructures.
+The tronmake k-mer pipeline is a designed to index large collections of sequencing data using different k-mer datastructures.
 
 The pipeline implements best-practice workflows for several state-of-the-art k-mer indexing methods: [Raptor](https://github.com/seqan/raptor), [kmindex](https://github.com/tlemane/kmindex), compacted De Bruijn Graph (cDBG) construction via [cuttlefish](https://github.com/COMBINE-lab/cuttlefish) and counting bloom filter construction via [Jellyfish](https://github.com/gmarcais/Jellyfish)
 
@@ -52,10 +52,10 @@ When running in **query** mode, you must provide an index manifest file describi
 
 #### Index Mode
 
-The input is a tab-separated sample sheet without a header. Multiple files per sample can be provided, separated by commas.
+The input is a tab-separated sample sheet **without** a header. Multiple files per sample can be provided, separated by commas.
 
-**Option 1: FASTQ only
-**
+**Option 1: FASTQ only**
+
 If only FASTQ files are used, the table should contain two columns: `bin_id` and `fastq` file path.
 
 | bin_id   | fastq                                                   |
@@ -116,10 +116,6 @@ snakemake \
 * `configfile`: The path to the config file.
 * `software-deployment-method`: Currently conda and apptainer are supported and tested.
 * `--conda-prefix` (optional): Where should the conda environments be stored
-
-## Cloud Execution (WDL)
-
-For cloud-based execution, a WDL workflow is provided in the `WDL/` directory. This allows for scalable indexing of large datasets using platforms like Terra or Cromwell, handling tasks such as BAM to FASTQ conversion and distributed minimiser extraction before building the final Raptor index.
 
 ### Output
 
@@ -205,6 +201,10 @@ Aggregated search results are provided as compressed binary file. You can use R 
 Quantitative annotation of search results are provided for each JellyFish index as simple TSV file.
 
 * `query/jellyfish/<index_name>/quantitative_search.tsv`
+
+## Cloud Execution (WDL)
+
+For cloud-based execution, a WDL workflow is provided in the `WDL/` directory. This allows for scalable indexing of large datasets using platforms like Terra or Cromwell, handling tasks such as BAM to FASTQ conversion and distributed minimiser extraction before building the final Raptor HIBF index. Other methods are currently not supported.
 
 
 ## References
