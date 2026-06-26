@@ -64,6 +64,7 @@ If only FASTQ files are used, the table should contain two columns: `bin_id` and
 | sample_2 | /path/to/sample_2.fastq.gz,/path/to/sample_2_2.fastq.gz |
 
 **Option 2: Mixed FASTQ and BAM**
+
 If the input includes reads in (u)BAM format, the table must contain three columns: `bin_id`, `fastq` (or `bam`) file path, and `file_type`.
 
 | bin_id   | fastq/bam                                               | file_type |
