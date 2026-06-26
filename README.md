@@ -12,7 +12,7 @@
 <!-- badges: end -->
 
 
-The tronmake k-mer pipeline is a designed to index large collections of sequencing data using different k-mer datastructures.
+The tronmake k-mer pipeline is a Snakemake workflow designed to index large collections of sequencing data using different k-mer datastructures.
 
 The pipeline implements best-practice workflows for several state-of-the-art k-mer indexing methods: [Raptor](https://github.com/seqan/raptor), [kmindex](https://github.com/tlemane/kmindex), compacted De Bruijn Graph (cDBG) construction via [cuttlefish](https://github.com/COMBINE-lab/cuttlefish) and counting bloom filter construction via [Jellyfish](https://github.com/gmarcais/Jellyfish)
 
