@@ -1,8 +1,8 @@
 <p align="center">
-    <img src="docs/kmer-pipeline/docs/resources/logo.png" alt="logo" width="15%">
+    <img src="docs/kmer-pipeline/docs/resources/logo.png" alt="logo" width="25%">
 </p>
 
-# TronMake k-mer pipeline
+# tronmake k-mer pipeline
 
 <!-- badges: start -->
 
@@ -14,6 +14,8 @@
 [![License](https://img.shields.io/badge/license-MIT-green?style=flat-square)](https://opensource.org/licenses/MIT)
 
 <!-- badges: end -->
+
+______________________________________________________________________
 
 
 The tronmake k-mer pipeline is a Snakemake workflow designed to index large collections of sequencing data using different k-mer datastructures.
@@ -58,7 +60,7 @@ When running in **query** mode, you must provide an index manifest file describi
 
 The input is a tab-separated sample sheet **without** a header. Multiple files per sample can be provided, separated by commas.
 
-**Option 1: FASTQ only**
+**Option 1: FASTQ/FASTA only**
 
 If only FASTQ files are used, the table should contain two columns: `bin_id` and `fastq` file path.
 
@@ -69,7 +71,7 @@ If only FASTQ files are used, the table should contain two columns: `bin_id` and
 
 **Option 2: Mixed FASTQ and BAM**
 
-If the input includes reads in (u)BAM format, the table must contain three columns: `bin_id`, `fastq` (or `bam`) file path, and `file_type`.
+If the input includes reads in (u)BAM format, the table must contain three columns: `bin_id`, `fastq` (or `bam`) file path, and `file_type`. You can not mix FASTQ/FASTA and bam files per `bin_id`
 
 | bin_id   | fastq/bam                                               | file_type |
 |:--------:|:-------------------------------------------------------:|:---------:|
@@ -119,7 +121,7 @@ snakemake \
 
 * `directory`: Specifies where the query/index results are stored.
 * `configfile`: The path to the config file.
-* `software-deployment-method`: Currently conda and apptainer are supported and tested.
+* `software-deployment-method`: Currently `conda` and `apptainer+conda` are supported and tested.
 * `--conda-prefix` (optional): Where should the conda environments be stored
 
 ### Output
@@ -210,6 +212,23 @@ Quantitative annotation of search results are provided for each JellyFish index 
 ## Cloud Execution (WDL)
 
 For cloud-based execution, a WDL workflow is provided in the `WDL/` directory. This allows for scalable indexing of large datasets using platforms like Terra or Cromwell, handling tasks such as BAM to FASTQ conversion and distributed minimiser extraction before building the final Raptor HIBF index. Other methods are currently not supported.
+
+## Contribution
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## About
+
+tronmake k-mer pipeline was originally developed in the Computational Genomics group at
+[TRON - Translational Oncology at the Medical Center of the Johannes Gutenberg University Mainz gGmbH (non-profit)](https://tron-mainz.de/).
+
+🛠️ Main developers:
+
+- [Johannes Hausmann](https://github.com/johausmann)
+
+✨ Contributors and code reviewers:
+
+- [Jonas Ibn-Salem](https://github.com/ibn-salem)
 
 
 ## References
