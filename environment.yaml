@@ -4,10 +4,10 @@ channels:
   - bioconda
   - nodefaults
 dependencies:
-  - bioconda::snakemake=9.1.6
+  - bioconda::snakemake>=9.20
   - conda-forge::pytest-workflow
   - conda-forge::mamba
-  - conda-forge::python=3.12.4
+  - conda-forge::python
   - pip
   - make
   - pandas

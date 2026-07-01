@@ -7,6 +7,4 @@ indexing:
   kmer_size: 21
   cutoff: 2
   method: "jellyfish"
-  fpr: 0.05
-  quantitative_index: False
 

@@ -1,0 +1,105 @@
+$schema: "https://json-schema.org/draft/2020-12/schema"
+description: >-
+  Validation & defaults for the tronmake kmer pipeline config.
+type: object
+properties:
+  modus:
+    type: object
+    default: {}
+    description: >-
+      Boolean flags to determine whether to run the pipeline in query or indexing mode. Only one of these flags can be set to true at a time. 
+    properties:
+      query:
+        type: boolean
+        default: false
+      indexing:
+        type: boolean
+        default: true
+  indexing:
+    type: object
+    default: {}
+    description: >-
+      Parameters for the indexing mode of the pipeline. These parameters are used to build a kmer index from the provided samples.
+    properties:
+      samples:
+        description: >-
+          Path to a tab-separated values (TSV) file containing sample information. Each row represents a sample, with the `bin_id` and the corresponding file path to the sample's sequencing data.
+        type: string
+        default: examples/samples.tsv
+      kmer_size:
+        description: >-
+          The size of the k-mers to be used for indexing. This value determines the length of the subsequences that will be extracted from the input sequences for indexing.
+        type: number
+        default: 21
+      cutoff:
+        description: >-
+          The minimum number of times a k-mer must appear in the input sequences to be included in the index.
+        type: number
+        default: 2
+      method:
+        description: >-
+          The method to be used for indexing. Depending on the desired indexing algorithm, this can be set to "raptor", "cuttlefish", "jellyfish" or "kmindex".
+        type: string
+        default: raptor
+        enum:
+          - raptor
+          - kmindex
+          - cuttlefish
+          - jellyfish
+      fpr:
+        description: >-
+          The false positive rate (FPR) for Bloom filter based indexing method. This value is used to control the trade-off between index size and accuracy. A lower FPR results in a larger index but fewer false positives, while a higher FPR results in a smaller index but more false positives.
+        type: number
+        default: 0.05
+      quantitative_index:
+        description: >-
+          A boolean flag indicating whether to build a quantitative kmindex index. If set to true, the kmindex will store the counts of k-mers in addition to their presence/absence information. Only applicable when the indexing method is set to "kmindex".
+        type: boolean
+        default: false
+  query:
+    type: object
+    default: {}
+    description: >-
+      Parameters for the query mode of the pipeline. These parameters are used to query a kmer index with the provided query sequences.
+    properties:
+      index:
+        description: >-
+          Path to the kmer index manifest file. This file contains the necessary information to locate and access the kmer index/indexes for querying.
+        type: string
+        default: examples/raptor.index
+      query_fasta:
+        description: >-
+          Path to the FASTA file containing the query sequences. The sequences in this file will be queried against the kmer index/indexes specified in the manifest file.
+        type: string
+        default: examples/query.fasta
+      kmer_ratio:
+        description: >-
+          The ratio of k-mers that must be present in a bin of the kmer index for a query sequence to be considered a match. This value is used to control the sensitivity of the query process. A higher ratio results in more stringent matching, while a lower ratio allows for more lenient matching.
+        type: number
+        default: 0.7
+      findere_z:
+        description: >-
+          The z parameter for the findere algorithm, which is used to improve the accuracy of kmer-based queries. This value controls the number of hash functions used in the findere algorithm, with higher values resulting in more accurate but slower queries. Only applicable when the query method is set to "kmindex".
+        type: number
+        default: 2
+allOf:
+  - not:
+      properties:
+        modus:
+          type: object
+          properties:
+            query:
+              const: true
+            indexing:
+              const: true
+
+  - not:
+      properties:
+        modus:
+          type: object
+          properties:
+            query:
+              const: false
+            indexing:
+              const: false
+
