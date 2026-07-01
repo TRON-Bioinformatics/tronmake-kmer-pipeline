@@ -3,14 +3,14 @@ import sys
 from snakemake.utils import validate
 
 
-configfile: workflow.source_path("../config/config.yaml")
+container: "docker://debian:trixie-slim"
+
+validate(config, workflow.source_path("schemas/config.schema.yaml"))
+#validate_config(config)
+print(config)
 
 
 include: "rules/common.smk"
-
-
-validate(config, workflow.source_path("../config/validate_config.yaml"))
-validate_config(config)
 
 # Read sample sheet and return dummy dataframe if in query mode
 if config["modus"]["indexing"]:
