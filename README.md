@@ -1,4 +1,8 @@
-# tronmake k-mer pipeline
+<p align="center">
+    <img src="docs/kmer-pipeline/docs/resources/logo.png" alt="logo" width="15%">
+</p>
+
+# TronMake k-mer pipeline
 
 <!-- badges: start -->
 
