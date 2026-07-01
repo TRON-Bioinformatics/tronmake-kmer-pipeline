@@ -6,7 +6,7 @@
 
 <!-- badges: start -->
 
-[![Snakemake](https://img.shields.io/badge/snakemake-9.1.6-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
+[![Snakemake](https://img.shields.io/badge/snakemake-9.23.1-brightgreen.svg?style=flat)](https://snakemake.readthedocs.io)
 ![Python](https://img.shields.io/badge/python-3670A0?style=flat-square&logo=python&logoColor=ffdd54)
 ![Pytest](https://img.shields.io/badge/pytest-%23ffffff.svg?style=flat-square&logo=pytest&logoColor=2f9fe3)
 [![CI](https://github.com/TRON-Bioinformatics/tronmake-kmer-pipeline/actions/workflows/ci.yaml/badge.svg)](https://github.com/TRON-Bioinformatics/tronmake-kmer-pipeline/actions/workflows/ci.yaml/badge.svg)
@@ -46,7 +46,7 @@ Depending on the selected method, the workflow follows different processing step
 
 ## Usage
 
-To run it, download the project, create the conda environment and modify the [config file](config/config.yaml) to fit your requirements. 
+To run it, download the project, create the conda environment and adapt the [config file](tests/configs/kmindex.yaml) to fit your requirements. 
 
 ```
 conda env create -p conda_env -f environment.yaml
