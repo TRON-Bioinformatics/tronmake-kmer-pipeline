@@ -4,20 +4,19 @@
     - query
   command: >
     snakemake -p --configfile tests/configs/query.yaml --config query='{method':' jellyfish, index':' tests/index_manifest/jellyfish_index_manifest.yaml, query_fasta':' examples/query_k4neo.fasta}'
+
   files:
     - path: "query/jellyfish/IT_N_103/quantitative_search.tsv"
       contains:
-        - "533edcf076516d19	AACTCAAGCAGGCGGCTCTC	38"
-        - "533edcf076516d19	AGAGCCGCCTGCTTGAGTTC	36"
-        - "533edcf076516d19	AGAACTCAAGCAGGCGGCTC	38"
-        - "533edcf076516d19	AGCCGCCTGCTTGAGTTCTA	37"
-        - "533edcf076516d19	GCCGCCTGCTTGAGTTCTAC	40"
+        - "533edcf076516d19\tAACTCAAGCAGGCGGCTCTC\t38"
+        - "533edcf076516d19\tAGAGCCGCCTGCTTGAGTTC\t36"
+        - "533edcf076516d19\tAGAACTCAAGCAGGCGGCTC\t38"
+        - "533edcf076516d19\tAGCCGCCTGCTTGAGTTCTA\t37"
+        - "533edcf076516d19\tGCCGCCTGCTTGAGTTCTAC\t40"
     - path: "query/jellyfish/IT_T_188/quantitative_search.tsv"
       contains:
-        - "533edcf076516d19	AACTCAAGCAGGCGGCTCTC	31"
-        - "533edcf076516d19	AGAGCCGCCTGCTTGAGTTC	30"
-        - "533edcf076516d19	AGAACTCAAGCAGGCGGCTC	31"
-        - "533edcf076516d19	AGCCGCCTGCTTGAGTTCTA	31"
-        - "533edcf076516d19	GCCGCCTGCTTGAGTTCTAC	32"
-
-
+        - "533edcf076516d19\tAACTCAAGCAGGCGGCTCTC\t31"
+        - "533edcf076516d19\tAGAGCCGCCTGCTTGAGTTC\t30"
+        - "533edcf076516d19\tAGAACTCAAGCAGGCGGCTC\t31"
+        - "533edcf076516d19\tAGCCGCCTGCTTGAGTTCTA\t31"
+        - "533edcf076516d19\tGCCGCCTGCTTGAGTTCTAC\t32"

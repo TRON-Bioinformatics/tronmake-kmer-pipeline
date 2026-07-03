@@ -5,6 +5,3 @@
   command: snakemake -p --configfile tests/configs/jellyfish.yaml
   files:
     - path: "index/jellyfish/1.jf"
-
-
-

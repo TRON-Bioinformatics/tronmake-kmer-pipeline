@@ -7,7 +7,6 @@ default-resources:
   mem_mb: 4096
   threads: 2
   runtime: 3600
-
 set-threads:
   raptor_prepare_per_sample: 1
   gather_raptor_minimisers: 1
@@ -25,7 +24,6 @@ set-threads:
   jellyfish_parse: 1
   combine_jellyfish: 1
   jellyfish_index: 2
-
 set-resources:
   raptor_prepare_per_sample:
     mem_mb: 16000 + ((attempt - 1) * 10000)
