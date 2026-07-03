@@ -5,12 +5,12 @@ from snakemake.utils import validate
 
 container: "docker://debian:trixie-slim"
 
+
 validate(config, workflow.source_path("schemas/config.schema.yaml"))
-#validate_config(config)
-print(config)
 
 
 include: "rules/common.smk"
+
 
 # Read sample sheet and return dummy dataframe if in query mode
 if config["modus"]["indexing"]:
@@ -40,7 +40,7 @@ localrules:
     estimate_bf_size,
     write_kmtricks_fof,
     kmindex,
-    split_fasta
+    split_fasta,
 
 
 rule all:
