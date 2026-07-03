@@ -11,13 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-* Updated pipeline to snakemake v9
+- Updated pipeline to snakemake v9
 
-* Added resource defaults for rules in workflow profile
+- Added resource defaults for rules in workflow profile
 
-* Updates to CI pipeline
+- Updates to CI pipeline
 
-* Updates to conda env yaml files
+- Updates to conda env yaml files
 
 ### Fixed
 
@@ -31,27 +31,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-* Added minimal WDL workflow for indexing in Terra cloud 
+- Added minimal WDL workflow for indexing in Terra cloud
 
-* Add expression classes for kmindex abundance indexing 
+- Add expression classes for kmindex abundance indexing
 
-* Added support for BAM input e.g. TCGA and GTEx samples
+- Added support for BAM input e.g. TCGA and GTEx samples
 
-* Added meta index support to query different indices in parallel
+- Added meta index support to query different indices in parallel
 
-* Combined search results of subindices into detection matrix 
+- Combined search results of subindices into detection matrix
 
 ### Changed
 
-* Ported pipeline to snakemake v8 
+- Ported pipeline to snakemake v8
 
-* Changed output of query format to compressed binary file (Parquet)
+- Changed output of query format to compressed binary file (Parquet)
 
 ### Fixed
 
-- Adjusted threads in raptor rules 
+- Adjusted threads in raptor rules
 
 ### Known issues
 
 ### Removed
-
