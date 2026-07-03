@@ -6,8 +6,7 @@ properties:
   modus:
     type: object
     default: {}
-    description: >-
-      Boolean flags to determine whether to run the pipeline in query or indexing mode. Only one of these flags can be set to true at a time. 
+    description: "Boolean flags to determine whether to run the pipeline in query or indexing mode. Only one of these flags can be set to true at a time. "
     properties:
       query:
         type: boolean
@@ -92,7 +91,6 @@ allOf:
               const: true
             indexing:
               const: true
-
   - not:
       properties:
         modus:
@@ -102,4 +100,3 @@ allOf:
               const: false
             indexing:
               const: false
-
