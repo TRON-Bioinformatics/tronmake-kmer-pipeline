@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
+
 def parse_ntcard(ntcard_histo, parsed_histo, sample_name):
-    with open(ntcard_histo, "r") as file_handle, open(parsed_histo, "w") as write_handle:
+    with open(ntcard_histo, "r") as file_handle, open(
+        parsed_histo, "w"
+    ) as write_handle:
         f0, f1 = 0, 0
         for line in file_handle:
             elements = line.rstrip().split("\t")
@@ -14,4 +17,9 @@ def parse_ntcard(ntcard_histo, parsed_histo, sample_name):
         result = f"{sample_name}\t{f0}\t{f1}\t{f0- f1}\n"
         write_handle.write(result)
 
-parse_ntcard(snakemake.input["histo"], snakemake.output["parsed_histo"], snakemake.wildcards["sample"])
+
+parse_ntcard(
+    snakemake.input["histo"],
+    snakemake.output["parsed_histo"],
+    snakemake.wildcards["sample"],
+)

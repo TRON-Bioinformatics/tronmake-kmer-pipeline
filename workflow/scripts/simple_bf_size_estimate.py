@@ -5,7 +5,7 @@
 # Copyright (c) 2018 Robert S. Harris
 # Licensed under the MIT License (see LICENSES/HowDeSBT-MIT.txt)
 
-# Ported from Python 2 to Python 3 using 2to3 
+# Ported from Python 2 to Python 3 using 2to3
 Estimate the proper size for BFs in an SBT, based on the theoretical bloom
 filter false positive rate.
 """
@@ -123,7 +123,7 @@ def parse_probability(s, strict=True):
         p = float(s)
     except:
         try:
-            (numer, denom) = s.split("/", 1)
+            numer, denom = s.split("/", 1)
             p = float(numer) / float(denom)
         except:
             raise ValueError
