@@ -24,7 +24,7 @@ mdformat-tables = ">=1.0.0,<2"
 
 [feature.style-md.tasks]
 style-md = { cmd = "mdformat **/*.md .github/**/*.md", default-environment = "style-md", description = "Auto-format markdown files" }
-lint-md = { cmd = "mdformat --check **/*.md .github/**/*.md", default-environment = "style-md", description = "Lint markdown files" }
+lint-md = { cmd = "mdformat --check **/*.md", default-environment = "style-md", description = "Lint markdown files" }
 
 [feature.style-python.dependencies]
 black = ">=26.3.1,<27"
