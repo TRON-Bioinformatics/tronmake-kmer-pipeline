@@ -3,13 +3,20 @@ import os.path
 
 rule raptor_prepare_per_sample:
     """
-    Extract k+4 minimisers for each input sample
-    """
+Extract k+4 minimisers for each input sample
+"""
     input:
         bin_fastq=get_ntcard_fastq,
     output:
         bin_minimiser="index/raptor/minimiser/{sample}/minimiser.list",
         idx_map="index/raptor/minimiser/{sample}/index_map.txt",
+    log:
+        "index/logs/raptor/minimiser/{sample}_minimiser.log",
+    conda:
+        "../envs/raptor.yaml"
+    container:
+        "docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2"
+    threads: 1
     params:
         sample_sheet=lambda wildcards, output: os.path.join(
             os.path.dirname(output.bin_minimiser), "sample_sheet.txt"
@@ -18,13 +25,6 @@ rule raptor_prepare_per_sample:
         cut_off=int(config["indexing"]["cutoff"]),
         kmer_size=int(config["indexing"]["kmer_size"]),
         window=int(config["indexing"]["kmer_size"]) + 4,
-    threads: 1
-    conda:
-        "../envs/raptor.yaml"
-    container:
-        "docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2"
-    log:
-        "index/logs/raptor/minimiser/{sample}_minimiser.log",
     message:
         "Extracting {params.kmer_size},{params.window} minimisers from sample {wildcards.sample}"
     shell:
@@ -41,8 +41,8 @@ rule raptor_prepare_per_sample:
 
 rule gather_raptor_minimisers:
     """
-    Collect minimiser files of all samples to be included in the index.
-    """
+Collect minimiser files of all samples to be included in the index.
+"""
     input:
         minimisers=expand(
             "index/raptor/minimiser/{sample}/minimiser.list",
@@ -50,11 +50,11 @@ rule gather_raptor_minimisers:
         ),
     output:
         minimiser_list="index/raptor/minimiser/minimiser.list",
-    threads: 1
+    log:
+        "index/logs/raptor/minimiser/minimiser_gathering.log",
     container:
         "docker://busybox:1.36.1-musl"
-    log:
-       "index/logs/raptor/minimiser/minimiser_gathering.log",
+    threads: 1
     shell:
         """
         exec 2> {log}
@@ -70,11 +70,11 @@ rule raptor_sample_mapping:
         ),
     output:
         index_mapping="index/raptor/index_mapping.txt",
-    threads: 1
-    container:
-        "docker://busybox:1.36.1-musl"
     log:
         "index/logs/raptor/index_mapping.log",
+    container:
+        "docker://busybox:1.36.1-musl"
+    threads: 1
     shell:
         """
         exec 2> {log}
@@ -84,23 +84,23 @@ rule raptor_sample_mapping:
 
 rule raptor_layout:
     """
-    Create HIBF layout file from minimiser files.WS
-    """
+Create HIBF layout file from minimiser files.WS
+"""
     input:
         minimiser_list=rules.gather_raptor_minimisers.output.minimiser_list,
     output:
         layout_file="index/raptor/hibf_binning.layout",
-    params:
-        fpr=float(config["indexing"]["fpr"]),
+    log:
+        "index/logs/raptor/layout.log",
     conda:
         "../envs/raptor.yaml"
     container:
         "docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2"
-    log:
-        "index/logs/raptor/layout.log",
     threads: 1
     resources:
         mem_mb=500,
+    params:
+        fpr=float(config["indexing"]["fpr"]),
     message:
         "Determining HIBF index layout"
     shell:
@@ -114,18 +114,18 @@ rule raptor_layout:
 
 rule raptor_build:
     """
-    Build Raptor HIBF index from layout and minimiser files.
-    """
+Build Raptor HIBF index from layout and minimiser files.
+"""
     input:
         layout_file=rules.raptor_layout.output.layout_file,
     output:
         hibf_index="index/raptor/raptor.index",
+    log:
+        "index/logs/raptor/build.log",
     conda:
         "../envs/raptor.yaml"
     container:
         "docker://quay.io/biocontainers/raptor:3.0.1--h6dccd9a_2"
-    log:
-        "index/logs/raptor/build.log",
     threads: 16
     resources:
         mem_mb=get_memory_raptor_build,

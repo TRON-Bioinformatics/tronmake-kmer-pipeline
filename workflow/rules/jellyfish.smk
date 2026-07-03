@@ -1,13 +1,13 @@
 checkpoint split_fasta:
     input:
-        query_fasta = config["query"]["query_fasta"],
+        query_fasta=config["query"]["query_fasta"],
     output:
-        directory("query/jellyfish/split_fasta")
+        directory("query/jellyfish/split_fasta"),
+    log:
+        "query/logs/jellyfish/split_fasta.log",
     container:
         "docker://busybox:1.36.1-musl"
     threads: 1
-    log:
-        "query/logs/jellyfish/split_fasta.log",
     shell:
         """
         mkdir -p {output}
@@ -23,34 +23,36 @@ checkpoint split_fasta:
             }}' {input.query_fasta} 2> {log}
         """
 
+
 rule jellyfish_query:
     input:
-        query_fasta = "query/jellyfish/split_fasta/{cts}.fasta",
-        index = get_index
+        query_fasta="query/jellyfish/split_fasta/{cts}.fasta",
+        index=get_index,
     output:
-        search_results = temp("query/jellyfish/{subindex}/{cts}_query.tsv")
-    threads: 1
+        search_results=temp("query/jellyfish/{subindex}/{cts}_query.tsv"),
     log:
         "query/logs/jellyfish/{subindex}_{cts}_query.log",
-    resources:
-        mem_mb = 8000
     conda:
-        '../envs/jellyfish.yaml'
+        "../envs/jellyfish.yaml"
     container:
-        'docker://quay.io/biocontainers/kmer-jellyfish'
+        "docker://quay.io/biocontainers/kmer-jellyfish"
+    threads: 1
+    resources:
+        mem_mb=8000,
     shell:
-       "jellyfish query -s {input.query_fasta} -o {output.search_results} {input.index} 2> {log}"
+        "jellyfish query -s {input.query_fasta} -o {output.search_results} {input.index} 2> {log}"
+
 
 rule jellyfish_parse:
     input:
-        query = "query/jellyfish/{subindex}/{cts}_query.tsv"
+        query="query/jellyfish/{subindex}/{cts}_query.tsv",
     output:
-        parsed_result = temp("query/jellyfish/{subindex}/{cts}_parsed.tsv")
+        parsed_result=temp("query/jellyfish/{subindex}/{cts}_parsed.tsv"),
+    log:
+        "query/logs/jellyfish/{subindex}_{cts}_query_parse.log",
     container:
         "docker://busybox:1.36.1-musl"
     threads: 1
-    log:
-        "query/logs/jellyfish/{subindex}_{cts}_query_parse.log",
     shell:
         """
         awk -v OFS='\\t' '
@@ -59,37 +61,38 @@ rule jellyfish_parse:
             }}' {input.query} > {output.parsed_result} 2> {log}
         """
 
+
 rule combine_jellyfish:
     input:
-        aggregate_jellyfish_input
+        aggregate_jellyfish_input,
     output:
-        "query/jellyfish/{subindex}/quantitative_search.tsv"
+        "query/jellyfish/{subindex}/quantitative_search.tsv",
+    log:
+        "query/logs/jellyfish/{subindex}_combine.log",
     container:
         "docker://busybox:1.36.1-musl"
     threads: 1
-    log:
-        "query/logs/jellyfish/{subindex}_combine.log",
     shell:
         "cat {input} > {output} 2> {log}"
 
 
-rule jellyfish_index: 
+rule jellyfish_index:
     input:
-        fastq = get_ntcard_fastq
+        fastq=get_ntcard_fastq,
     output:
-        jf = "index/jellyfish/{sample}.jf"
-    params:
-        kmer_size = int(config["indexing"]["kmer_size"]),
-        workdir = lambda wildcards, output: os.path.dirname(output.jf)
+        jf="index/jellyfish/{sample}.jf",
+    log:
+        "index/logs/jellyfish/{sample}_jf_build.log",
     conda:
-        '../envs/jellyfish.yaml'
+        "../envs/jellyfish.yaml"
     container:
-        'docker://quay.io/biocontainers/kmer-jellyfish'
+        "docker://quay.io/biocontainers/kmer-jellyfish"
     threads: 2
     resources:
-        mem_mb = 8000
-    log:
-        'index/logs/jellyfish/{sample}_jf_build.log'
+        mem_mb=8000,
+    params:
+        kmer_size=int(config["indexing"]["kmer_size"]),
+        workdir=lambda wildcards, output: os.path.dirname(output.jf),
     shell:
         """
         # Create FIFO as replacement for /dev/fd0
