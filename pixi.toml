@@ -23,14 +23,14 @@ mdformat-shfmt = ">=0.2.0,<0.3"
 mdformat-tables = ">=1.0.0,<2"
 
 [feature.style-md.tasks]
-style-md = { cmd = "mdformat **/*.md .github/**/*.md", default-environment = "style-md", description = "Auto-format markdown files" }
+style-md = { cmd = "mdformat **/*.md", default-environment = "style-md", description = "Auto-format markdown files" }
 lint-md = { cmd = "mdformat --check **/*.md", default-environment = "style-md", description = "Lint markdown files" }
 
 [feature.style-python.dependencies]
 black = ">=26.3.1,<27"
 
 [feature.style-python.tasks]
-style-python = { cmd = "black **/*.py", default-environment = "style-python", description = "Auto-format python files" }
+style-python = { cmd = "black **/*.py --force-exclude 'workflow/scripts/simple_bf_size_estimate_python2.py'", default-environment = "style-python", description = "Auto-format python files" }
 lint-python = { cmd = "black --check **/*.py", default-environment = "style-python", description = "Lint python files" }
 
 [feature.style-snakemake.dependencies]
