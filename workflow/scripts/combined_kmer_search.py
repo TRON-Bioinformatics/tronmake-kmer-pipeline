@@ -4,7 +4,7 @@ Script to merge subindices search results into unified table
 Output looks like this:
 
     S1  S2  S3  S4
-q1  0.7     0.7 
+q1  0.7     0.7
 q2      0.7     0.7
 q3          0.7
 
