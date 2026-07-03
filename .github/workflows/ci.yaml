@@ -7,66 +7,63 @@ on:
     branches: [ "**" ]
 
 jobs:
-  test_linting:
+  syntaxcheck:
+    name: Syntax Check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-
-      - name: Cache Conda packages
-        uses: actions/cache@v3
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0.9.4
         with:
-          path: ~/.conda/pkgs
-          key: conda-pkgs-${{ runner.os }}-${{ hashFiles('**/environment.yaml') }}
-          restore-keys: |
-            conda-pkgs-${{ runner.os }}-
+          cache: true
+      - run: |
+          pixi run test-syntax
 
-      - name: Set up Conda
-        uses: conda-incubator/setup-miniconda@v3
+  lint:
+    runs-on: "ubuntu-latest"
+    steps:
+      - uses: actions/checkout@v4
         with:
-          environment-file: environment.yaml
-          activate-environment: tronmake
-          auto-activate-base: false
-          miniforge-variant: Miniforge3
-          miniforge-version: latest
-          use-only-tar-bz2: true
-          channel-priority: strict
+          submodules: recursive
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          cache: true
+      - run: |
+          pixi run lint
 
-      - name: Lint with Snakemake
-        shell: bash -l {0}
-        run: |
-          snakemake --lint
 
-  test_pipeline:
+  integration:
+    name: Integration Tests
+    if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install libxml2
-        run: |
-          sudo apt update
-          sudo apt install -y libxml2
-
-      - name: Cache Conda packages
-        uses: actions/cache@v3
         with:
-          path: ~/.conda/pkgs
-          key: conda-pkgs-${{ runner.os }}-${{ hashFiles('tests/ci.yaml') }}
-          restore-keys: |
-            conda-pkgs-${{ runner.os }}-
-
-      - name: Set up Conda
-        uses: conda-incubator/setup-miniconda@v3
+          submodules: recursive
+      - uses: dorny/paths-filter@v4
+        id: filter
         with:
-          environment-file: tests/ci.yaml
-          activate-environment: Snakemake
-          auto-activate-base: false
-          miniforge-variant: Miniforge3
-          miniforge-version: latest
-          use-only-tar-bz2: false
-
-      - name: Run tests
+          filters: |
+            pipeline:
+              - '!**.md'
+              - '!docs/**'
+              - '!documentation/**'
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0.9.4
+        with:
+          cache: true
+    
+      - name: Run Integration Tests
         shell: bash -l {0}
         run: |
-          make test
+          pixi run test-ci
+
+      - name: Clean up
+        run: |
+          rm -rf .snakemake
+          rm -rf results
+      - run: df -h
+        if: ${{ always() }}
