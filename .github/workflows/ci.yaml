@@ -1,11 +1,9 @@
 name: CI
-
 on:
   push:
-    branches: [ "**" ]
+    branches: ["**"]
   pull_request:
-    branches: [ "**" ]
-
+    branches: ["**"]
 jobs:
   syntaxcheck:
     name: Syntax Check
@@ -20,7 +18,6 @@ jobs:
           cache: true
       - run: |
           pixi run test-syntax
-
   lint:
     runs-on: "ubuntu-latest"
     steps:
@@ -33,8 +30,6 @@ jobs:
           cache: true
       - run: |
           pixi run lint
-
-
   integration:
     name: Integration Tests
     if: github.event_name == 'pull_request'
@@ -55,12 +50,10 @@ jobs:
         uses: prefix-dev/setup-pixi@v0.9.4
         with:
           cache: true
-    
       - name: Run Integration Tests
         shell: bash -l {0}
         run: |
           pixi run test-ci
-
       - name: Clean up
         run: |
           rm -rf .snakemake
