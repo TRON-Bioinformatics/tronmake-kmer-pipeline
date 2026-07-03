@@ -46,10 +46,15 @@ Depending on the selected method, the workflow follows different processing step
 
 ## Usage
 
-To run it, download the project, create the conda environment and adapt the [config file](tests/configs/kmindex.yaml) to fit your requirements. 
+To run it, download the project, install dependencies with pixi and adapt the [config file](tests/configs/kmindex.yaml) to fit your requirements. 
 
 ```
-conda env create -p conda_env -f environment.yaml
+git clone https://github.com/TRON-Bioinformatics/tronmake-kmer-pipeline.git
+git checkout <release>
+```
+
+```
+pixi shell
 ```
 
 When running in **query** mode, you must provide an index manifest file describing the indices to be queried. See the [example manifest](tests\index_manifest\raptor_index_manifest.yaml) for details.
