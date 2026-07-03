@@ -1,0 +1,6 @@
+# Test syntax.
+- name: test_dryrun
+  tags:
+    - dryrun
+  command: >
+    snakemake -j 1 -n
