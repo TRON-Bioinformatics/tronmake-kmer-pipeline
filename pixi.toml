@@ -31,7 +31,7 @@ black = ">=26.3.1,<27"
 
 [feature.style-python.tasks]
 style-python = { cmd = "black **/*.py --force-exclude 'workflow/scripts/simple_bf_size_estimate_python2.py'", default-environment = "style-python", description = "Auto-format python files" }
-lint-python = { cmd = "black --check **/*.py", default-environment = "style-python", description = "Lint python files" }
+lint-python = { cmd = "black --check --force-exclude 'workflow/scripts/simple_bf_size_estimate_python2.py' **/*.py", default-environment = "style-python", description = "Lint python files" }
 
 [feature.style-snakemake.dependencies]
 snakefmt = ">=1.1.0,<2"
