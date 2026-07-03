@@ -4,10 +4,8 @@
     - query
     - build
   command: >
-    bash -c "
-    snakemake -p --configfile tests/configs/kmindex.yaml ; 
-    snakemake -p --cores 1 --configfile tests/configs/query.yaml --config query='{method':' kmindex, index':' tests/index_manifest/kmindex_index_manifest.yaml}'
-    "
+    bash -c " snakemake -p --configfile tests/configs/kmindex.yaml ;  snakemake -p --cores 1 --configfile tests/configs/query.yaml --config query='{method':' kmindex, index':' tests/index_manifest/kmindex_index_manifest.yaml}' "
+
   files:
     - path: "index/kmindex/bloom_filter_size.txt"
       contains:
@@ -23,7 +21,7 @@
         - '"nb_partitions": 4'
     - path: "query/kmindex/kmindex_test_index/search.tsv"
       contains:
-        - "samples:1_1/1	0.9989773178251977"
+        - "samples:1_1/1\t0.9989773178251977"
     - path: "query/kmindex/kmindex_test_index/parsed_search.tsv.gz"
       md5sum: "ba05e66756f6b638c9f65d0932e29f9a"
     - path: "query/kmindex/search.parquet"

@@ -9,5 +9,5 @@
       md5sum: 671c4f6c1c6ab3dc93a74b8d6f2f545d
     - path: "index/raptor/index_mapping.txt"
       contains:
-         - "minimiser_id	sample_name"
-         - "index/raptor/minimiser/1/bin_00.minimiser	1"
+        - "minimiser_id\tsample_name"
+        - "index/raptor/minimiser/1/bin_00.minimiser\t1"
