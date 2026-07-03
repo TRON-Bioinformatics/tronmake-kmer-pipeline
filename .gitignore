@@ -8,3 +8,6 @@ conda_env/
 conda_env_test
 env/
 
+# pixi environments
+.pixi/*
+!.pixi/config.toml
