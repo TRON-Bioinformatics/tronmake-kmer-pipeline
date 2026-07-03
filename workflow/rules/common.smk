@@ -19,7 +19,7 @@ def validate_config(config):
     assert config["query"]["method"] in [
         "raptor",
         "kmindex",
-        "jellyfish"
+        "jellyfish",
     ], "Selected method not supported"
 
     if config["modus"]["query"]:
@@ -76,7 +76,6 @@ def get_final_output(samples: pd.DataFrame, index_struct: dict):
                 final_output.append(
                     f"query/{quant_method}/{this_sample}/quantitative_search.tsv",
                 )
-
 
     elif config["modus"]["indexing"]:
         method = config["indexing"]["method"]
@@ -246,10 +245,13 @@ def get_subindex_results_raptor(wildcards):
         "query/raptor/{subindex}/parsed_search.tsv.gz", subindex=raptor_indices
     )
 
+
 def aggregate_jellyfish_input(wildcards):
-    
+
     checkpoint_output = checkpoints.split_fasta.get(**wildcards).output[0]
-    
-    return expand("query/jellyfish/{subindex}/{cts}_parsed.tsv",
-           subindex=wildcards.subindex,
-           cts=glob_wildcards(os.path.join(checkpoint_output, "{cts}.fasta")).cts)
+
+    return expand(
+        "query/jellyfish/{subindex}/{cts}_parsed.tsv",
+        subindex=wildcards.subindex,
+        cts=glob_wildcards(os.path.join(checkpoint_output, "{cts}.fasta")).cts,
+    )
