@@ -1,0 +1,17 @@
+[workspace]
+authors = ["Johannes Hausmann"]
+channels = ["conda-forge", "bioconda"]
+name = "tronmake-kmer-pipeline"
+platforms = ["linux-64"]
+version = "3.0.0"
+
+[tasks]
+
+[dependencies]
+snakemake = { version = ">=9.20", channel = "bioconda" }
+pandas = "*"
+loguru = "*"
+conda = { version = ">=26.5", channel = "conda-forge"}
+snakemake-storage-plugin-http = "*"
+snakemake-executor-plugin-cluster-generic = "*"
+snakemake-executor-plugin-slurm = "*"
