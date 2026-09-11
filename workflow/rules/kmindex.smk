@@ -59,7 +59,7 @@ Collect all k-mer cardinality counts, combine into one list and sort by largest 
     log:
         "index/logs/ntcard/gather_ntcard.log",
     container:
-        "docker://busybox:1.36.1-musl"
+        "docker://debian:bookworm-slim"
     threads: 1
     message:
         "Sorting k-mer cardinalities in descending order"
@@ -107,7 +107,7 @@ rule gather_fastq_kmtricks:
     log:
         "index/kmindex/{sample}_gather_fastq_input.log",
     container:
-        "docker://busybox:1.36.1-musl"
+        "docker://debian:bookworm-slim"
     params:
         formatted_input=lambda wildcards, input: f"{wildcards.sample} : {' ; '.join(input.fastq)}",
     shell:
@@ -124,7 +124,7 @@ rule write_kmtricks_fof:
     log:
         "index/kmindex/create_fof.log",
     container:
-        "docker://busybox:1.36.1-musl"
+        "docker://debian:bookworm-slim"
     shell:
         "cat {input} > {output.fof}"
 

@@ -6,7 +6,7 @@ checkpoint split_fasta:
     log:
         "query/logs/jellyfish/split_fasta.log",
     container:
-        "docker://busybox:1.36.1-musl"
+        "docker://debian:bookworm-slim"
     threads: 1
     shell:
         """
@@ -51,7 +51,7 @@ rule jellyfish_parse:
     log:
         "query/logs/jellyfish/{subindex}_{cts}_query_parse.log",
     container:
-        "docker://busybox:1.36.1-musl"
+        "docker://debian:bookworm-slim"
     threads: 1
     shell:
         """
@@ -70,7 +70,7 @@ rule combine_jellyfish:
     log:
         "query/logs/jellyfish/{subindex}_combine.log",
     container:
-        "docker://busybox:1.36.1-musl"
+        "docker://debian:bookworm-slim"
     threads: 1
     shell:
         "cat {input} > {output} 2> {log}"

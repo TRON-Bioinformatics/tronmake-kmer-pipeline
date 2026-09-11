@@ -53,7 +53,7 @@ Collect minimiser files of all samples to be included in the index.
     log:
         "index/logs/raptor/minimiser/minimiser_gathering.log",
     container:
-        "docker://busybox:1.36.1-musl"
+        "docker://debian:bookworm-slim"
     threads: 1
     shell:
         """
@@ -73,7 +73,7 @@ rule raptor_sample_mapping:
     log:
         "index/logs/raptor/index_mapping.log",
     container:
-        "docker://busybox:1.36.1-musl"
+        "docker://debian:bookworm-slim"
     threads: 1
     shell:
         """

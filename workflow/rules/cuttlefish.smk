@@ -42,7 +42,7 @@ rule compress_cDBG:
     log:
         "index/logs/cuttlefish/{sample}_cuttlefish_compress.log",
     container:
-        "docker://busybox:1.36.1-musl"
+        "docker://debian:bookworm-slim"
     threads: 1
     resources:
         mem_mb=2000,
